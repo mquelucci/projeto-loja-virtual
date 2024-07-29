@@ -12,7 +12,7 @@ func Auth() gin.HandlerFunc {
 		session := sessions.Default(c)
 		autorizado := session.Get("auth")
 		if autorizado != true {
-			c.Redirect(http.StatusFound, "/login")
+			c.Redirect(http.StatusFound, "/admin/login")
 			c.Abort()
 			return
 		}

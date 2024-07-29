@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
@@ -28,7 +29,7 @@ func ExibeHTMLAdmin(c *gin.Context) {
 func ExibeHTMLAdminLogin(c *gin.Context) {
 	var configs models.Config
 	database.DB.First(&configs)
-	c.HTML(http.StatusOK, "adminLogin", gin.H{
+	c.HTML(http.StatusOK, "login.html", gin.H{
 		"configs": configs,
 	})
 }
@@ -40,10 +41,15 @@ func FazerLogin(c *gin.Context) {
 	var admin models.Admin
 	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
-			"Error": "Invalid credentials",
+			"Error": "Credenciais inválidas",
 		})
 		return
 	}
+
+	session := sessions.Default(c)
+	session.Set("auth", true)
+	session.Save()
+	ExibeHTMLAdmin(c)
 }
 
 func BuscarProdutos(c *gin.Context) []models.Produto {
