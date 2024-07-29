@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
+	"os"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
 )
+
+var server = os.Getenv("SERVER")
 
 func ExibeHTMLIndex(c *gin.Context) {
 	var configs models.Config
@@ -46,10 +49,14 @@ func FazerLogin(c *gin.Context) {
 		return
 	}
 
-	session := sessions.Default(c)
-	session.Set("auth", true)
-	session.Save()
-	ExibeHTMLAdmin(c)
+	c.SetCookie("auth", "true", 3600, "/", server, false, true)
+	c.Redirect(http.StatusMovedPermanently, "/admin")
+}
+
+func FazerLogout(c *gin.Context) {
+	log.Println(c.Cookie("auth"))
+	c.SetCookie("auth", "", 0, "/", server, false, true)
+	c.Redirect(http.StatusFound, "/admin/login")
 }
 
 func BuscarProdutos(c *gin.Context) []models.Produto {
