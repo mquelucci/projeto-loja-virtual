@@ -4,37 +4,53 @@
   <body>
     {{template "_navbarAdmin.html" .}}
     <main>
-      <section class="container mt-5">
-        <div class="row">
-          <form action="/admin/produtos/new" method="post">
-            <div class="row justify-content-center">
-              <div class="col-10 col-md-4">
-                <div class="form-floating mb-3">
-                  <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Descrição" required />
-                  <label for="descricao">Descrição</label>
+      <section class="container d-flex align-items-center" style="height: 80vh">
+        <div class="col-10 col-lg-5 mx-auto">
+          <div class="card p-3">
+            <h3 class="text-center fw-bold mb-3">Cadastrar novo produto</h3>
+            <form action="/admin/produtos/new" method="post">
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Descrição" required />
+                    <label for="descricao">Descrição</label>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="row justify-content-center">
-              <div class="col-10 col-md-2">
-                <div class="form-floating mb-3">
-                  <input type="number" class="form-control" id="preco" name="preco" placeholder="Preço" min="0.0" required />
-                  <label for="preco">Preço</label>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <div class="form-floating">
+                    <input type="number" class="form-control" id="preco" name="preco" placeholder="Preço" min="0" step="0.01" required />
+                    <label for="preco">Preço</label>
+                  </div>
                 </div>
-              </div>
-              <div class="col-10 col-md-2">
-                <div class="form-floating mb-3">
+                <div class="col-6">
+                  <div class="form-floating">
                     <input type="number" class="form-control" id="quantidade" name="quantidade" placeholder="Quantidade" min="0.0" required />
                     <label for="quantidade">Quantidade</label>
                   </div>
+                </div>
               </div>
-            </div>
-          </form>
+              <div class="row">
+                <div class="col-12">
+                  <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                    <button type="submit" class="btn btn-success">Cadastrar</button>
+                    <button type="reset" class="btn btn-danger">Limpar</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            {{ if .erro }}
+            <div class="alert alert-danger my-3" role="alert">{{.erro}}</div>
+            {{ end }}
+            {{ if .message }}
+            <div class="alert alert-success my-3" role="alert">{{.message}}</div>
+            {{ end }}
+          </div>
         </div>
       </section>
     </main>
 
-    {{template "_bsScript.html" .}}
-    {{template "_darkModeScript.html" .}}
+    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}}
   </body>
 </html>

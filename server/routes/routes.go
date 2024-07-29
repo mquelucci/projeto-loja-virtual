@@ -24,6 +24,8 @@ func HandleRequests() {
 		auth.GET("/", controllers.ExibeHTMLAdmin)
 		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
 		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
+		auth.POST("/produtos/new", controllers.CriarProduto)
+		auth.GET("/produtos/delete", controllers.DeletarProduto)
 		auth.POST("/logout", controllers.FazerLogout)
 	}
 
