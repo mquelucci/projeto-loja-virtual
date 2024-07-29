@@ -7,8 +7,9 @@ import (
 
 type Produto struct {
 	gorm.Model
-	Nome  string  `json:"nome" validate:"nonzero, nonnil"`
-	Preco float64 `json:"preco" validade:"min=0.0, nonnil"`
+	Descricao  string  `json:"descricao" validate:"nonzero, nonnil"`
+	Preco      float64 `json:"preco" validade:"min=0.0, nonnil"`
+	Quantidade int     `json:"quantidade" validate:"min=0, nonnil"`
 }
 
 func ValidaProduto(produto *Produto) error {

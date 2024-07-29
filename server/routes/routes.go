@@ -7,6 +7,7 @@ import (
 )
 
 func HandleRequests() {
+	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
 	r.LoadHTMLGlob("client/templates/**/*")
 	r.Static("/assets", "./client/assets")
@@ -21,8 +22,11 @@ func HandleRequests() {
 	auth := r.Group("/admin").Use(middlewares.Auth())
 	{
 		auth.GET("/", controllers.ExibeHTMLAdmin)
+		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
+		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
 		auth.POST("/logout", controllers.FazerLogout)
 	}
 
+	r.NoRoute(controllers.ExibeHTML404)
 	r.Run()
 }

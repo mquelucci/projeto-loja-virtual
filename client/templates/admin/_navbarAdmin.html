@@ -7,12 +7,16 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" href="#">Produtos</a>
+          <a class="nav-link" href="/admin/produtos">Produtos</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">Clientes</a>
         </li>
       </ul>
+      <div class="form-check form-switch me-3">
+        <input class="form-check-input" type="checkbox" role="switch" id="chk-modo-noturno">
+        <label class="form-check-label" for="chk-modo-noturno">Modo Noturno <i class="bi bi-moon-fill"></i></label>
+      </div>
       <form action="/admin/logout" method="POST">
         <button class="btn btn-outline-danger" type="submit">Logout</button>
       </form>

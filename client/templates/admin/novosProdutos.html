@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-br">
+  {{template "_head.html" .}}
+  <body>
+    {{template "_navbarAdmin.html" .}}
+    <main>
+      <section class="container mt-5">
+        <div class="row">
+          <form action="/admin/produtos/new" method="post">
+            <div class="row justify-content-center">
+              <div class="col-10 col-md-4">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Descrição" required />
+                  <label for="descricao">Descrição</label>
+                </div>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-10 col-md-2">
+                <div class="form-floating mb-3">
+                  <input type="number" class="form-control" id="preco" name="preco" placeholder="Preço" min="0.0" required />
+                  <label for="preco">Preço</label>
+                </div>
+              </div>
+              <div class="col-10 col-md-2">
+                <div class="form-floating mb-3">
+                    <input type="number" class="form-control" id="quantidade" name="quantidade" placeholder="Quantidade" min="0.0" required />
+                    <label for="quantidade">Quantidade</label>
+                  </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    {{template "_bsScript.html" .}}
+    {{template "_darkModeScript.html" .}}
+  </body>
+</html>

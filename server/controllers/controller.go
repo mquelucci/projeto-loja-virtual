@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"os"
 
@@ -12,9 +11,15 @@ import (
 
 var server = os.Getenv("SERVER")
 
+func ExibeHTML404(c *gin.Context) {
+	configs := BuscarConfigs()
+	c.HTML(http.StatusNotFound, "404.html", gin.H{
+		"configs": configs,
+	})
+}
+
 func ExibeHTMLIndex(c *gin.Context) {
-	var configs models.Config
-	database.DB.First(&configs)
+	configs := BuscarConfigs()
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"configs":  configs,
 		"produtos": BuscarProdutos(c),
@@ -22,17 +27,32 @@ func ExibeHTMLIndex(c *gin.Context) {
 }
 
 func ExibeHTMLAdmin(c *gin.Context) {
-	var configs models.Config
-	database.DB.First(&configs)
+	configs := BuscarConfigs()
 	c.HTML(http.StatusOK, "admin.html", gin.H{
 		"configs": configs,
 	})
 }
 
 func ExibeHTMLAdminLogin(c *gin.Context) {
-	var configs models.Config
-	database.DB.First(&configs)
+	configs := BuscarConfigs()
 	c.HTML(http.StatusOK, "login.html", gin.H{
+		"configs": configs,
+	})
+}
+
+func ExibeHTMLAdminProdutos(c *gin.Context) {
+	configs := BuscarConfigs()
+	var produtos []models.Produto
+	database.DB.Find(&produtos)
+	c.HTML(http.StatusOK, "adminProdutos.html", gin.H{
+		"configs":  configs,
+		"produtos": produtos,
+	})
+}
+
+func ExibeHTMLAdminCadastrarProduto(c *gin.Context) {
+	configs := BuscarConfigs()
+	c.HTML(http.StatusOK, "novosProdutos.html", gin.H{
 		"configs": configs,
 	})
 }
@@ -54,7 +74,6 @@ func FazerLogin(c *gin.Context) {
 }
 
 func FazerLogout(c *gin.Context) {
-	log.Println(c.Cookie("auth"))
 	c.SetCookie("auth", "", 0, "/", server, false, true)
 	c.Redirect(http.StatusFound, "/admin/login")
 }
@@ -65,6 +84,8 @@ func BuscarProdutos(c *gin.Context) []models.Produto {
 	return produtos
 }
 
-func CriarProduto(c *gin.Context) {
-
+func BuscarConfigs() models.Config {
+	var configs models.Config
+	database.DB.First(&configs)
+	return configs
 }

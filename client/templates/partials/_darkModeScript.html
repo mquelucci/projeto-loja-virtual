@@ -1,0 +1,9 @@
+<script>
+    const botaoModoNoturno = document.querySelector("#chk-modo-noturno")
+    const body = document.body
+
+    botaoModoNoturno.addEventListener("click", () => {
+        const modo = botaoModoNoturno.checked ? 'dark' : 'light'
+        body.setAttribute("data-bs-theme", modo)
+    })
+</script>

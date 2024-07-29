@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-br">
+  {{template "_head.html" .}}
+  <body>
+    {{template "_navbarAdmin.html" .}}
+    <main>
+      <section class="container mt-5">
+        <div class="card p-4">
+          <table class="table table-sm bg-success text-light rounded-3">
+            <thead>
+              <tr class="text-center fw-bold">
+                <th>Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{range .Produtos}}
+              <tr>
+                <td>{{.Nome}}</td>
+                <td>R$ {{.Preco | printf "%.2f"}}</td>
+                <td>{{.Quantidade}}</td>
+                <td><a href="/admin/produtos/edit?id={{.Id}}" class="btn btn-info"></a></td>
+                <td><a class="btn btn-danger" onclick="onDelete('{{.Id}}')"></a></td>
+              </tr>
+              {{end}}
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-4">
+          <a href="/admin/produtos/new" class="btn btn-primary">Criar novo produto</a>
+        </div>
+      </section>
+    </main>
+    {{template "_bsScript.html" .}}
+    <script>
+      function onDelete(id) {
+        if (confirm('Deseja excluir esse produto?')) {
+          window.location = '/admin/produtos/delete?id=' + id
+        }
+      }
+    </script>
+  </body>
+</html>
