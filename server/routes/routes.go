@@ -31,6 +31,7 @@ func HandleRequests() {
 		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
 		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
 		auth.POST("/produtos/new", controllers.CriarProduto)
+		auth.GET("/produtos/edit", controllers.ExibeHTMLAdminEditarProduto)
 		auth.POST("/produtos/edit", controllers.EditarProduto)
 		auth.GET("/produtos/delete", controllers.DeletarProduto)
 		auth.DELETE("/produtos/delete", controllers.DeletarProduto)

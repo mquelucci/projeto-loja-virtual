@@ -19,7 +19,7 @@ func ExibeHTMLIndex(c *gin.Context) {
 	configs := BuscarConfigs()
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"configs":  configs,
-		"produtos": BuscarProdutos(c),
+		"produtos": BuscarProdutos(),
 	})
 }
 

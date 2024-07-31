@@ -9,7 +9,7 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
 )
 
-func BuscarProdutos(c *gin.Context) []models.Produto {
+func BuscarProdutos() []models.Produto {
 	produtos := []models.Produto{}
 	database.DB.Find(&produtos)
 	return produtos
@@ -49,7 +49,39 @@ func CriarProduto(c *gin.Context) {
 }
 
 func EditarProduto(c *gin.Context) {
+	var produto models.Produto
+	id := c.Query("id")
+	database.DB.First(&produto, id)
+	descricao := c.PostForm("descricao")
+	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
+	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
 
+	if preco == 0.0 {
+		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
+			"configs": BuscarConfigs(),
+			"erro":    "Preço precisa ser diferente de zero",
+		})
+		return
+	}
+
+	produto.Descricao = descricao
+	produto.Preco = preco
+	produto.Quantidade = int(quantidade)
+
+	if err := models.ValidaProduto(&produto); err != nil {
+		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
+			"configs": BuscarConfigs(),
+			"erro":    err.Error(),
+		})
+		return
+	}
+
+	database.DB.Save(&produto)
+	c.HTML(http.StatusCreated, "editarProduto.html", gin.H{
+		"configs": BuscarConfigs(),
+		"produto": produto,
+		"message": "Produto editado com sucesso",
+	})
 }
 
 func DeletarProduto(c *gin.Context) {
@@ -58,6 +90,6 @@ func DeletarProduto(c *gin.Context) {
 	database.DB.Delete(&produto, id)
 	c.HTML(http.StatusAccepted, "adminProdutos.html", gin.H{
 		"configs":  BuscarConfigs(),
-		"produtos": BuscarProdutos(c),
+		"produtos": BuscarProdutos(),
 	})
 }
