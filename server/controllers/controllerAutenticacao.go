@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
@@ -19,7 +20,9 @@ func FazerLogin(c *gin.Context) {
 		})
 		return
 	}
-
+	session := sessions.Default(c)
+	session.Set("auth", "true")
+	session.Save()
 	c.SetCookie("auth", "true", 3600, "/", server, false, true)
 	c.Redirect(http.StatusMovedPermanently, "/admin")
 }

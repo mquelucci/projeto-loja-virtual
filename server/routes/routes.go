@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/controllers"
 	"github.com/mquelucci/projeto-loja-virtual/server/middlewares"
@@ -9,6 +11,10 @@ import (
 func HandleRequests() {
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
+
+	store := memstore.NewStore([]byte("apikey"))
+	r.Use(sessions.Sessions("mysession", store))
+
 	r.LoadHTMLGlob("client/templates/**/*")
 	r.Static("/assets", "./client/assets")
 	r.GET("/", controllers.ExibeHTMLIndex)
@@ -19,7 +25,7 @@ func HandleRequests() {
 		noAuth.POST("/login", controllers.FazerLogin)
 	}
 
-	auth := r.Group("/admin").Use(middlewares.Auth())
+	auth := r.Group("/admin").Use(middlewares.Auth(), sessions.Sessions("mysession", store))
 	{
 		auth.GET("/", controllers.ExibeHTMLAdmin)
 		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
