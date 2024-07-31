@@ -8,8 +8,8 @@ import (
 type Produto struct {
 	gorm.Model
 	Descricao  string  `json:"descricao" validate:"nonzero, nonnil"`
-	Preco      float64 `json:"preco" validade:"gte=0,  nonnil"`
-	Quantidade int     `json:"quantidade" validate:"nonzero, nonnil"`
+	Preco      float64 `json:"preco" validade:"nonnil"`
+	Quantidade int     `json:"quantidade" validate:"nonnil"`
 }
 
 func ValidaProduto(produto *Produto) error {

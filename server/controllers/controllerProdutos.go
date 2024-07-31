@@ -21,6 +21,14 @@ func CriarProduto(c *gin.Context) {
 	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
 
+	if preco == 0.0 {
+		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+			"configs": BuscarConfigs(),
+			"erro":    "Preço precisa ser diferente de zero",
+		})
+		return
+	}
+
 	produto.Descricao = descricao
 	produto.Preco = preco
 	produto.Quantidade = int(quantidade)
