@@ -59,6 +59,7 @@ func EditarProduto(c *gin.Context) {
 	if preco == 0.0 {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
 			"configs": BuscarConfigs(),
+			"produto": produto,
 			"erro":    "Preço precisa ser diferente de zero",
 		})
 		return
@@ -71,6 +72,7 @@ func EditarProduto(c *gin.Context) {
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
 			"configs": BuscarConfigs(),
+			"produto": produto,
 			"erro":    err.Error(),
 		})
 		return
