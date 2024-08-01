@@ -7,9 +7,9 @@ import (
 
 type Cliente struct {
 	gorm.Model
-	Nome     string `json:"nome" validate:"nonzero, nonnil"`
-	Telefone int    `json:"telefone" validade:"min=8, max=9, nonnil"`
-	Email    string `json:"email" validade:"nonzero, nonnil"`
+	Nome     string `json:"nome" validate:"nonzero, nonnil" gorm:"unique;notNull"`
+	Telefone int    `json:"telefone" validade:"min=8, max=9, nonnil" gorm:"notNull"`
+	Email    string `json:"email" validade:"nonzero, nonnil" gorm:"notNull"`
 }
 
 func ValidaCliente(cliente *Cliente) error {

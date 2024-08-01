@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -16,10 +17,33 @@ func BuscarProdutos() []models.Produto {
 }
 
 func CriarProduto(c *gin.Context) {
+	// contentType := c.GetHeader("Content-Type")
+	// log.Println(contentType)
+	// if contentType != "" || contentType != "multipart/form-data" {
+	// 	c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+	// 		"configs": BuscarConfigs(),
+	// 		"erro":    "Content-Type não é multipart/form-data",
+	// 	})
+	// 	return
+	// }
 	var produto models.Produto
 	descricao := c.PostForm("descricao")
 	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
+	imagem, err := c.FormFile("imagem")
+	if err != nil {
+		log.Println("Nenhum arquivo carregado. Salvando produto no banco de dados.")
+	}
+
+	savePath := "./client/assets/images/" + imagem.Filename
+	err = c.SaveUploadedFile(imagem, savePath)
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+			"configs": BuscarConfigs(),
+			"erro":    "Erro ao salvar a imagem" + err.Error(),
+		})
+		return
+	}
 
 	if preco == 0.0 {
 		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
@@ -32,6 +56,7 @@ func CriarProduto(c *gin.Context) {
 	produto.Descricao = descricao
 	produto.Preco = preco
 	produto.Quantidade = int(quantidade)
+	produto.Imagem = "/assets/images/" + imagem.Filename
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{

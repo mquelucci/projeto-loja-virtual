@@ -8,10 +8,10 @@
         <div class="col-10 col-lg-5 mx-auto">
           <div class="card p-3">
             <h3 class="text-center fw-bold mb-3">Cadastrar novo produto</h3>
-            <form action="/admin/produtos/new" method="post">
-              <div class="row">
+            <form action="/admin/produtos/new" method="post" enctype="multipart/form-data">
+              <div class="row mb-3">
                 <div class="col-12">
-                  <div class="form-floating mb-3">
+                  <div class="form-floating">
                     <input type="text" class="form-control" id="descricao" name="descricao" placeholder="Descrição" required />
                     <label for="descricao">Descrição</label>
                   </div>
@@ -31,7 +31,15 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <div class="f mb-3">
+                    <label for="imagem" class="form-label">Imagem do produto (opcional)</label>
+                    <input class="form-control" type="file" id="imagem" name="imagem"/>
+                  </div>
+                </div>
+              </div>
+              <div class="row text-center">
                 <div class="col-12">
                   <button type="submit" class="btn btn-success">Cadastrar</button>
                   <a href="/admin/produtos" class="btn btn-primary">Voltar</a>

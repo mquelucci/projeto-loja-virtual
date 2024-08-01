@@ -11,6 +11,7 @@ import (
 func HandleRequests() {
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
+	r.MaxMultipartMemory = 8 << 20
 
 	store := memstore.NewStore([]byte("apikey"))
 	r.Use(sessions.Sessions("mysession", store))
