@@ -21,8 +21,16 @@
                   <td>{{.Descricao}}</td>
                   <td>R$ {{.Preco}}</td>
                   <td>{{.Quantidade}}</td>
-                  <td><a href="/admin/produtos/edit?id={{.ID}}" class="btn btn-info">Editar</a></td>
-                  <td><button onclick="onDelete('{{.ID}}')" class="btn btn-danger">Deletar</button></td>
+                  <td>
+                    <div class="row g-2">
+                      <div class="col-12 col-lg-4">
+                        <a href="/admin/produtos/edit?id={{.ID}}" class="btn btn-info">Editar</a>
+                      </div>
+                      <div class="col-12 col-lg-4">
+                        <button onclick="onDelete('{{.ID}}')" class="btn btn-danger">Deletar</button>
+                      </div>
+                    </div>
+                  </td>
                 </tr>
                 {{end}}
               </tbody>

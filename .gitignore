@@ -5,3 +5,4 @@ package.json
 config.env
 client/assets/images/*.jpg
 client/assets/images/*.png
+!client/assets/images/not_found.png

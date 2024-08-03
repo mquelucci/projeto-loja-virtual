@@ -12,20 +12,11 @@ import (
 
 func BuscarProdutos() []models.Produto {
 	produtos := []models.Produto{}
-	database.DB.Find(&produtos)
+	database.DB.Order("descricao ASC").Find(&produtos)
 	return produtos
 }
 
 func CriarProduto(c *gin.Context) {
-	// contentType := c.GetHeader("Content-Type")
-	// log.Println(contentType)
-	// if contentType != "" || contentType != "multipart/form-data" {
-	// 	c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-	// 		"configs": BuscarConfigs(),
-	// 		"erro":    "Content-Type não é multipart/form-data",
-	// 	})
-	// 	return
-	// }
 	var produto models.Produto
 	descricao := c.PostForm("descricao")
 	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
@@ -33,16 +24,18 @@ func CriarProduto(c *gin.Context) {
 	imagem, err := c.FormFile("imagem")
 	if err != nil {
 		log.Println("Nenhum arquivo carregado. Salvando produto no banco de dados.")
-	}
-
-	savePath := "./client/assets/images/" + imagem.Filename
-	err = c.SaveUploadedFile(imagem, savePath)
-	if err != nil {
-		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-			"configs": BuscarConfigs(),
-			"erro":    "Erro ao salvar a imagem" + err.Error(),
-		})
-		return
+		produto.Imagem = "/assets/images/not_found.png"
+	} else {
+		savePath := "./client/assets/images/" + imagem.Filename
+		err = c.SaveUploadedFile(imagem, savePath)
+		if err != nil {
+			c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+				"configs": BuscarConfigs(),
+				"erro":    "Erro ao salvar a imagem" + err.Error(),
+			})
+			return
+		}
+		produto.Imagem = "/assets/images/" + imagem.Filename
 	}
 
 	if preco == 0.0 {
@@ -56,7 +49,6 @@ func CriarProduto(c *gin.Context) {
 	produto.Descricao = descricao
 	produto.Preco = preco
 	produto.Quantidade = int(quantidade)
-	produto.Imagem = "/assets/images/" + imagem.Filename
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
@@ -65,7 +57,13 @@ func CriarProduto(c *gin.Context) {
 		})
 		return
 	}
-	database.DB.Create(&produto)
+	err = database.DB.Create(&produto).Error
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+			"configs": BuscarConfigs(),
+			"erro":    err.Error(),
+		})
+	}
 	c.HTML(http.StatusCreated, "novosProdutos.html", gin.H{
 		"configs": BuscarConfigs(),
 		"message": "Produto criado com sucesso",
@@ -81,6 +79,22 @@ func EditarProduto(c *gin.Context) {
 	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
 
+	imagem, err := c.FormFile("imagem")
+	if err != nil {
+		log.Println("Nenhum arquivo carregado. Mantendo o registro de imagem do produto.")
+	} else {
+		savePath := "./client/assets/images/" + imagem.Filename
+		err = c.SaveUploadedFile(imagem, savePath)
+		if err != nil {
+			c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
+				"configs": BuscarConfigs(),
+				"erro":    "Erro ao salvar a imagem" + err.Error(),
+			})
+			return
+		}
+		produto.Imagem = "/assets/images/" + imagem.Filename
+	}
+
 	if preco == 0.0 {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
 			"configs": BuscarConfigs(),
@@ -103,11 +117,40 @@ func EditarProduto(c *gin.Context) {
 		return
 	}
 
-	database.DB.Save(&produto)
-	c.HTML(http.StatusCreated, "editarProduto.html", gin.H{
+	err = database.DB.Save(&produto).Error
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
+			"configs": BuscarConfigs(),
+			"produto": produto,
+			"erro":    err.Error(),
+		})
+	}
+	c.HTML(http.StatusAccepted, "editarProduto.html", gin.H{
 		"configs": BuscarConfigs(),
 		"produto": produto,
 		"message": "Produto editado com sucesso",
+	})
+}
+
+func RemoverImagemProduto(c *gin.Context) {
+	id := c.Query("id")
+	var produto models.Produto
+	database.DB.First(&produto, id)
+	produto.Imagem = "/assets/images/not_found.png"
+
+	err := database.DB.Save(&produto).Error
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
+			"configs": BuscarConfigs(),
+			"produto": produto,
+			"erro":    err.Error(),
+		})
+	}
+
+	c.HTML(http.StatusAccepted, "editarProduto.html", gin.H{
+		"configs": BuscarConfigs(),
+		"produto": produto,
+		"message": "Imagem removida com sucesso",
 	})
 }
 
