@@ -13,6 +13,7 @@
                   <th>Produto</th>
                   <th>Preço</th>
                   <th>Quantidade</th>
+                  <th class="d-none d-md-table-cell">Ativo</th>
                   <th>Ações</th>
                 </tr>
               </thead>
@@ -22,6 +23,11 @@
                   <td>{{.Descricao}}</td>
                   <td>R$ {{.Preco}}</td>
                   <td>{{.Quantidade}}</td>
+                  {{if .Ativo}}
+                  <td class="d-none d-md-table-cell">Ativo</td>
+                  {{else}}
+                  <td class="d-none d-md-table-cell">Inativo</td>
+                  {{end}}
                   <td>
                     <div class="row g-2">
                       <div class="col-12 col-lg-4 mx-auto">

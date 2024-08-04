@@ -11,6 +11,7 @@ type Produto struct {
 	Preco      float64 `json:"preco" validade:"nonnil" gorm:"notNull"`
 	Quantidade int     `json:"quantidade" validate:"nonnil" gorm:"notNull"`
 	Imagem     string  `json:"imagem"`
+	Ativo      bool    `json:"ativo" validate:"nonnil" gorm:"notNull"`
 }
 
 func ValidaProduto(produto *Produto) error {

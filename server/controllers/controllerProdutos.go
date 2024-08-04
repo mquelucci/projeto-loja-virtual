@@ -20,6 +20,7 @@ func BuscarProdutos() []models.Produto {
 
 func CriarProduto(c *gin.Context) {
 	var produto models.Produto
+
 	descricao := c.PostForm("descricao")
 	err := utils.ProdutoDuplo(descricao, false, &produto)
 	if err != nil {
@@ -46,8 +47,8 @@ func CriarProduto(c *gin.Context) {
 		}
 		produto.Imagem = "/assets/images/" + imagem.Filename
 	}
-	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 
+	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 	if preco == 0.0 {
 		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
 			"configs": BuscarConfigs(),
@@ -59,6 +60,13 @@ func CriarProduto(c *gin.Context) {
 
 	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
 	produto.Quantidade = int(quantidade)
+
+	ativo := c.PostForm("ativo")
+	if ativo == "on" {
+		produto.Ativo = true
+	} else {
+		produto.Ativo = false
+	}
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
@@ -129,6 +137,13 @@ func EditarProduto(c *gin.Context) {
 
 	quantidade, _ := strconv.Atoi(c.PostForm("quantidade"))
 	produto.Quantidade = int(quantidade)
+
+	ativo := c.PostForm("ativo")
+	if ativo == "on" {
+		produto.Ativo = true
+	} else {
+		produto.Ativo = false
+	}
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
