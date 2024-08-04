@@ -3,6 +3,5 @@ package-lock.json
 package.json
 .prettierrc
 config.env
-client/assets/images/*.jpg
-client/assets/images/*.png
+client/assets/images/*
 !client/assets/images/not_found.png
