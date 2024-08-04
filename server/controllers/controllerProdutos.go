@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -83,7 +84,11 @@ func EditarProduto(c *gin.Context) {
 	if err != nil {
 		log.Println("Nenhum arquivo carregado. Mantendo o registro de imagem do produto.")
 	} else {
+
 		savePath := "./client/assets/images/" + imagem.Filename
+		if savePath == produto.Imagem {
+			os.Remove(savePath)
+		}
 		err = c.SaveUploadedFile(imagem, savePath)
 		if err != nil {
 			c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
@@ -136,6 +141,8 @@ func RemoverImagemProduto(c *gin.Context) {
 	id := c.Query("id")
 	var produto models.Produto
 	database.DB.First(&produto, id)
+	pathImagem := "./client" + produto.Imagem
+	os.Remove(pathImagem)
 	produto.Imagem = "/assets/images/not_found.png"
 
 	err := database.DB.Save(&produto).Error
