@@ -193,7 +193,7 @@ func DeletarProduto(c *gin.Context) {
 		})
 		return
 	}
-	c.HTML(http.StatusBadRequest, "adminProdutos.html", gin.H{
+	c.HTML(http.StatusAccepted, "adminProdutos.html", gin.H{
 		"configs":  BuscarConfigs(),
 		"produtos": BuscarProdutos(),
 	})
