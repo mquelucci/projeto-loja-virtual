@@ -16,5 +16,4 @@ func TratarImagemProduto(c *gin.Context, imagem *multipart.FileHeader, produto *
 	}
 	err := c.SaveUploadedFile(imagem, savePath)
 	return err
-	// produto.Imagem = "/assets/images/" + imagem.Filename
 }

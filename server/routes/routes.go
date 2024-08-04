@@ -28,6 +28,7 @@ func HandleRequests() {
 
 	auth := r.Group("/admin").Use(middlewares.Auth())
 	{
+		auth.POST("/configuracoes", controllers.AlterarConfiguracoes)
 		auth.POST("/produtos/new", controllers.CriarProduto)
 		auth.POST("/produtos/edit", controllers.EditarProduto)
 
