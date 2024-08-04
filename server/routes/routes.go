@@ -28,18 +28,19 @@ func HandleRequests() {
 
 	auth := r.Group("/admin").Use(middlewares.Auth())
 	{
-		auth.GET("/", controllers.ExibeHTMLAdmin)
-		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
-		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
 		auth.POST("/produtos/new", controllers.CriarProduto)
-		auth.GET("/produtos/edit", controllers.ExibeHTMLAdminEditarProduto)
 		auth.POST("/produtos/edit", controllers.EditarProduto)
-		auth.PUT("/produtos/edit", controllers.EditarProduto)
+
 		auth.GET("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		auth.PUT("/produtos/removeImagem", controllers.RemoverImagemProduto)
 		auth.GET("/produtos/delete", controllers.DeletarProduto)
-		auth.DELETE("/produtos/delete", controllers.DeletarProduto)
+		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
+		auth.GET("/produtos/edit", controllers.ExibeHTMLAdminEditarProduto)
+		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)
+
 		auth.POST("/logout", controllers.FazerLogout)
+
+		auth.GET("/", controllers.ExibeHTMLAdmin)
+
 	}
 
 	r.NoRoute(controllers.ExibeHTML404)

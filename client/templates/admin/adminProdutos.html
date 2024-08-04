@@ -13,6 +13,7 @@
                   <th>Produto</th>
                   <th>Preço</th>
                   <th>Quantidade</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -23,11 +24,11 @@
                   <td>{{.Quantidade}}</td>
                   <td>
                     <div class="row g-2">
-                      <div class="col-12 col-lg-4">
+                      <div class="col-12 col-lg-4 mx-auto">
                         <a href="/admin/produtos/edit?id={{.ID}}" class="btn btn-info">Editar</a>
                       </div>
-                      <div class="col-12 col-lg-4">
-                        <button onclick="onDelete('{{.ID}}')" class="btn btn-danger">Deletar</button>
+                      <div class="col-12 col-lg-4 mx-auto">
+                        <button type="button" onclick="onDelete('{{.ID}}')" class="btn btn-danger">Deletar</button>
                       </div>
                     </div>
                   </td>
@@ -40,14 +41,16 @@
         <div class="mt-4">
           <a href="/admin/produtos/new" class="btn btn-primary">Criar novo produto</a>
         </div>
+        {{ if .erro }}
+        <div class="alert alert-danger my-3" role="alert">{{.erro}}</div>
+        {{ end }}
       </section>
     </main>
-    {{template "_bsScript.html" .}}
-    {{template "_darkModeScript.html" .}}
+    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}}
     <script>
       function onDelete(id) {
-        if (confirm('Deseja excluir esse produto?')) {
-          window.location = '/admin/produtos/delete?id=' + id
+        if (confirm('Deseja realmente deletar esse produto?')) {
+          window.location.href = "/admin/produtos/delete?id="+id
         }
       }
     </script>

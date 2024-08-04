@@ -7,7 +7,7 @@ import (
 
 type Produto struct {
 	gorm.Model
-	Descricao  string  `json:"descricao" validate:"nonzero, nonnil" gorm:"unique;notNull"`
+	Descricao  string  `json:"descricao" validate:"nonzero, nonnil" gorm:"notNull"`
 	Preco      float64 `json:"preco" validade:"nonnil" gorm:"notNull"`
 	Quantidade int     `json:"quantidade" validate:"nonnil" gorm:"notNull"`
 	Imagem     string  `json:"imagem"`

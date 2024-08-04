@@ -10,7 +10,7 @@
             <h3 class="text-center fw-bold mb-3">Editar produto</h3>
             <div class="row g-2">
               <div class="col-12 col-lg-4 my-auto mx-auto">
-                <img src="{{.produto.Imagem}}" class="w-100 object-fit-fill border rounded" alt=""/>
+                <img src="{{.produto.Imagem}}" class="w-100 object-fit-fill border rounded" alt="" />
               </div>
               <div class="col-12 col-lg-8">
                 <form action="/admin/produtos/edit?id={{.produto.ID}}" method="post" enctype="multipart/form-data">
@@ -41,14 +41,14 @@
                     <div class="col-12">
                       <div class="f mb-3">
                         <label for="imagem" class="form-label">Imagem do produto (opcional)</label>
-                        <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*"/>
+                        <input class="form-control" type="file" id="imagem" name="imagem" accept="image/*" />
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-12">
                       <button type="submit" class="btn btn-success">Editar</button>
-                      <a href="/admin/produtos/removeImagem?id={{.produto.ID}}" class="btn btn-danger">Remover imagem</a>
+                      <a href="/admin/produtos/removeImagem?id={{.ID}}" class="btn btn-danger">Remover Imagem</a>
                       <a href="/admin/produtos" class="btn btn-primary">Voltar</a>
                     </div>
                   </div>
@@ -66,5 +66,6 @@
     </main>
 
     {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}}
+
   </body>
 </html>
