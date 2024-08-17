@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/controllers"
 	"github.com/mquelucci/projeto-loja-virtual/server/middlewares"
@@ -13,8 +13,8 @@ func HandleRequests() {
 	r := gin.Default()
 	r.MaxMultipartMemory = 8 << 20
 
-	store := memstore.NewStore([]byte("apikey"))
-	r.Use(sessions.Sessions("mysession", store))
+	store := cookie.NewStore([]byte("lojavirtual"))
+	r.Use(sessions.Sessions("lojavirtual", store))
 
 	r.LoadHTMLGlob("client/templates/**/*")
 	r.Static("/assets", "./client/assets")
@@ -23,7 +23,7 @@ func HandleRequests() {
 	noAuth := r.Group("/admin")
 	{
 		noAuth.GET("/login", controllers.ExibeHTMLAdminLogin)
-		noAuth.POST("/login", controllers.FazerLogin)
+		noAuth.POST("/autorizar", controllers.Autenticar)
 	}
 
 	auth := r.Group("/admin").Use(middlewares.Auth())
@@ -33,7 +33,7 @@ func HandleRequests() {
 		auth.POST("/produtos/edit", controllers.EditarProduto)
 
 		auth.GET("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		auth.GET("/produtos/delete", controllers.DeletarProduto)
+		auth.DELETE("/produtos/delete", controllers.DeletarProduto)
 		auth.GET("/produtos/new", controllers.ExibeHTMLAdminCadastrarProduto)
 		auth.GET("/produtos/edit", controllers.ExibeHTMLAdminEditarProduto)
 		auth.GET("/produtos", controllers.ExibeHTMLAdminProdutos)

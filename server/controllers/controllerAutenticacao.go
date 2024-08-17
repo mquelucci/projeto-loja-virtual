@@ -9,10 +9,14 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
 )
 
-func FazerLogin(c *gin.Context) {
+func Autenticar(c *gin.Context) {
+	//Grava usuario e senha recebidos do formulário
 	usuario := c.PostForm("usuario")
 	senha := c.PostForm("senha")
 
+	//Cria uma variável do modelo Admin para receber os dados
+	//de acesso de administrador cadastrados no banco,
+	//caso o usuário e senha informados coincidam com o que tem no banco de dados
 	var admin models.Admin
 	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
@@ -22,13 +26,21 @@ func FazerLogin(c *gin.Context) {
 	}
 	session := sessions.Default(c)
 	session.Set("auth", true)
-	session.Save()
+	err := session.Save()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 	c.Redirect(http.StatusMovedPermanently, "/admin")
 }
 
 func FazerLogout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Delete("auth")
-	session.Save()
+	err := session.Save()
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 	c.Redirect(http.StatusFound, "/admin/login")
 }

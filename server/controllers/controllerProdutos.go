@@ -201,15 +201,8 @@ func DeletarProduto(c *gin.Context) {
 	var produto models.Produto
 	err := database.DB.Delete(&produto, id).Error
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "adminProdutos.html", gin.H{
-			"configs":  BuscarConfigs(),
-			"produtos": BuscarProdutos(),
-			"erro":     err.Error(),
-		})
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.HTML(http.StatusAccepted, "adminProdutos.html", gin.H{
-		"configs":  BuscarConfigs(),
-		"produtos": BuscarProdutos(),
-	})
+	c.JSON(http.StatusAccepted, gin.H{})
 }

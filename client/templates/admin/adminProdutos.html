@@ -56,7 +56,14 @@
     <script>
       function onDelete(id) {
         if (confirm('Deseja realmente deletar esse produto?')) {
-          window.location.href = "/admin/produtos/delete?id="+id
+          fetch(`${window.location.origin}/admin/produtos/delete?id=${id}`, {
+            method: 'DELETE',
+          })
+          .then((response) => window.location.reload())
+          .catch((error) => {
+            alert(error.message)
+            window.location.reload()
+          })
         }
       }
     </script>
