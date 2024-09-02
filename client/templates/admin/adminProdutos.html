@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-br">
   {{template "_head.html" .}}
   <body>
@@ -31,7 +31,7 @@
                   <td>
                     <div class="row g-2">
                       <div class="col-12 col-lg-4 mx-auto">
-                        <a href="/admin/produtos/edit?id={{.ID}}" class="btn btn-info">Editar</a>
+                        <a href="/admin/produtos/editar?id={{.ID}}" class="btn btn-info">Editar</a>
                       </div>
                       <div class="col-12 col-lg-4 mx-auto">
                         <button type="button" onclick="onDelete('{{.ID}}')" class="btn btn-danger">Deletar</button>
@@ -45,25 +45,26 @@
           </div>
         </div>
         <div class="mt-4">
-          <a href="/admin/produtos/new" class="btn btn-primary">Criar novo produto</a>
+          <a href="/admin/produtos/criar" class="btn btn-primary">Criar novo produto</a>
         </div>
-        {{ if .erro }}
-        <div class="alert alert-danger my-3" role="alert">{{.erro}}</div>
-        {{ end }}
+
+        {{template "_standardFlashes.html" .}}
+      
       </section>
     </main>
-    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}}
+    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}} {{template "_axiosScript.html"}}
     <script>
       function onDelete(id) {
         if (confirm('Deseja realmente deletar esse produto?')) {
-          fetch(`${window.location.origin}/admin/produtos/delete?id=${id}`, {
-            method: 'DELETE',
-          })
-          .then((response) => window.location.reload())
-          .catch((error) => {
-            alert(error.message)
-            window.location.reload()
-          })
+          axios.delete(`${window.location.origin}/admin/produtos/delete?id=${id}`).then(
+            (response) => {
+              window.location.reload()
+            },
+            (error) => {
+              alert(error.message)
+              window.location.reload()
+            }
+          )
         }
       }
     </script>

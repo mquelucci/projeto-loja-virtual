@@ -1,0 +1,27 @@
+info:
+  contact: {}
+paths:
+  /admin/delete:
+    delete:
+      description: Através do ID informado, realiza o soft-delete no banco de dados
+      parameters:
+      - description: Account ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Deleta o produto da loja
+      tags:
+      - produtos
+swagger: "2.0"

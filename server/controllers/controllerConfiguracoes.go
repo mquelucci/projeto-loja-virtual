@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"github.com/mquelucci/projeto-loja-virtual/server/utils"
 )
 
 func AlterarConfiguracoes(c *gin.Context) {
@@ -15,6 +16,6 @@ func AlterarConfiguracoes(c *gin.Context) {
 	configs.NomeLoja = nomeLoja
 	database.DB.Save(&configs)
 	c.HTML(http.StatusOK, "admin.html", gin.H{
-		"configs": BuscarConfigs(),
+		"configs": utils.BuscarConfigs(),
 	})
 }

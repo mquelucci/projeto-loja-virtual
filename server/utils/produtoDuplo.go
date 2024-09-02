@@ -22,7 +22,6 @@ func ProdutoDuplo(descricao string, editando bool, produto *models.Produto) erro
 		}
 		return nil
 	} else {
-
 		err := database.DB.Where("descricao = ?", descricao).Find(&produtos).Error
 		if err != nil {
 			return err

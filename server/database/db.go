@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -28,6 +29,13 @@ func ConectaBanco() {
 	case "postgres":
 		stringDeConexao := os.Getenv("CONNECTIONSTRING")
 		DB, err = gorm.Open(postgres.Open(stringDeConexao), &gorm.Config{})
+		if err != nil {
+			panic("Não foi possível conectar ao banco de dados" + err.Error())
+		}
+		DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{})
+	case "mysql":
+		stringDeConexao := os.Getenv("CONNECTIONSTRING")
+		DB, err = gorm.Open(mysql.Open(stringDeConexao), &gorm.Config{})
 		if err != nil {
 			panic("Não foi possível conectar ao banco de dados" + err.Error())
 		}

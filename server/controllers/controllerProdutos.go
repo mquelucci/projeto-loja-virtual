@@ -6,27 +6,25 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
 	"github.com/mquelucci/projeto-loja-virtual/server/utils"
 )
 
-func BuscarProdutos() []models.Produto {
-	produtos := []models.Produto{}
-	database.DB.Order("descricao ASC").Find(&produtos)
-	return produtos
-}
-
 func CriarProduto(c *gin.Context) {
 	var produto models.Produto
+	session := sessions.Default(c)
 
 	descricao := c.PostForm("descricao")
 	err := utils.ProdutoDuplo(descricao, false, &produto)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-			"configs": BuscarConfigs(),
-			"erro":    err.Error(),
+		msg := err.Error()
+		session.AddFlash(msg, "MsgInfo")
+		session.Save()
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
 		})
 		return
 	}
@@ -39,20 +37,24 @@ func CriarProduto(c *gin.Context) {
 	} else {
 		err := utils.TratarImagemProduto(c, imagem, &produto)
 		if err != nil {
-			c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-				"configs": BuscarConfigs(),
-				"erro":    err.Error(),
+			msg := "Erro no tratamento de imagem do produto" + err.Error()
+			session.AddFlash(msg, "MsgFalha")
+			session.Save()
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"erro": err.Error(),
 			})
 			return
 		}
 		produto.Imagem = "/assets/images/" + imagem.Filename
 	}
 
-	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
-	if preco == 0.0 {
-		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-			"configs": BuscarConfigs(),
-			"erro":    "Preço precisa ser diferente de zero",
+	preco, err := strconv.ParseFloat(c.PostForm("preco"), 64)
+	if err != nil {
+		msg := "Erro na conversão de preço" + err.Error()
+		session.AddFlash(msg, "MsgFalha")
+		session.Save()
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
 		})
 		return
 	}
@@ -69,24 +71,32 @@ func CriarProduto(c *gin.Context) {
 	}
 
 	if err := models.ValidaProduto(&produto); err != nil {
-		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-			"configs": BuscarConfigs(),
-			"erro":    err.Error(),
+		msg := "AVISO! - Erro na validação do produto: " + err.Error()
+		session.AddFlash(msg, "MsgFalha")
+		session.Save()
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
 		})
 		return
 	}
 
 	err = database.DB.Create(&produto).Error
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "novosProdutos.html", gin.H{
-			"configs": BuscarConfigs(),
-			"erro":    err.Error(),
+		msg := "Erro na criação do produto: " + err.Error()
+		session.AddFlash(msg, "MsgFalha")
+		session.Save()
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"erro": err.Error(),
 		})
 		return
 	}
-	c.HTML(http.StatusCreated, "novosProdutos.html", gin.H{
-		"configs": BuscarConfigs(),
-		"message": "Produto criado com sucesso",
+
+	session.AddFlash("Produto criado com sucesso", "MsgSucesso")
+	session.Save()
+	c.JSON(http.StatusCreated, gin.H{
+		"produto": produto,
 	})
 
 }
@@ -99,8 +109,8 @@ func EditarProduto(c *gin.Context) {
 	descricao := c.PostForm("descricao")
 	err := utils.ProdutoDuplo(descricao, true, &produto)
 	if err != nil {
-		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-			"configs": BuscarConfigs(),
+		c.JSON(http.StatusBadRequest, gin.H{
+			"configs": utils.BuscarConfigs(),
 			"produto": produto,
 			"erro":    err.Error(),
 		})
@@ -114,8 +124,8 @@ func EditarProduto(c *gin.Context) {
 	} else {
 		err := utils.TratarImagemProduto(c, imagem, &produto)
 		if err != nil {
-			c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-				"configs": BuscarConfigs(),
+			c.JSON(http.StatusBadRequest, gin.H{
+				"configs": utils.BuscarConfigs(),
 				"produto": produto,
 				"erro":    err.Error(),
 			})
@@ -126,8 +136,8 @@ func EditarProduto(c *gin.Context) {
 
 	preco, _ := strconv.ParseFloat(c.PostForm("preco"), 64)
 	if preco == 0.0 {
-		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-			"configs": BuscarConfigs(),
+		c.JSON(http.StatusBadRequest, gin.H{
+			"configs": utils.BuscarConfigs(),
 			"produto": produto,
 			"erro":    "Preço precisa ser diferente de zero",
 		})
@@ -147,7 +157,7 @@ func EditarProduto(c *gin.Context) {
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-			"configs": BuscarConfigs(),
+			"configs": utils.BuscarConfigs(),
 			"produto": produto,
 			"erro":    err.Error(),
 		})
@@ -157,14 +167,14 @@ func EditarProduto(c *gin.Context) {
 	err = database.DB.Save(&produto).Error
 	if err != nil {
 		c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-			"configs": BuscarConfigs(),
+			"configs": utils.BuscarConfigs(),
 			"produto": produto,
 			"erro":    err.Error(),
 		})
 		return
 	}
 	c.HTML(http.StatusAccepted, "editarProduto.html", gin.H{
-		"configs": BuscarConfigs(),
+		"configs": utils.BuscarConfigs(),
 		"produto": produto,
 		"message": "Produto editado com sucesso",
 	})
@@ -181,7 +191,7 @@ func RemoverImagemProduto(c *gin.Context) {
 		err := database.DB.Save(&produto).Error
 		if err != nil {
 			c.HTML(http.StatusBadRequest, "editarProduto.html", gin.H{
-				"configs": BuscarConfigs(),
+				"configs": utils.BuscarConfigs(),
 				"produto": produto,
 				"erro":    err.Error(),
 			})
@@ -189,20 +199,45 @@ func RemoverImagemProduto(c *gin.Context) {
 		}
 	}
 	c.HTML(http.StatusAccepted, "editarProduto.html", gin.H{
-		"configs": BuscarConfigs(),
+		"configs": utils.BuscarConfigs(),
 		"produto": produto,
 		"message": "Imagem removida com sucesso",
 	})
 
 }
 
+// DeletarProduto godoc
+//
+//	@Summary		Deleta o produto da loja
+//	@Description	Através do ID informado, realiza o soft-delete no banco de dados
+//	@Tags			produtos
+//	@Produce		json
+//	@Param			id	query		int	true	"Account ID"
+//	@Success		202	{object}	string
+//	@Failure		500	{object}	string
+//	@Router			/admin/delete [delete]
 func DeletarProduto(c *gin.Context) {
+	session := sessions.Default(c)
 	id := c.Query("id")
 	var produto models.Produto
-	err := database.DB.Delete(&produto, id).Error
+	err := database.DB.First(&produto, id).Error
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		session.AddFlash("Erro ao tentar encontrar o produto na base de dados", "MsgFalha")
+		session.Save()
+		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusAccepted, gin.H{})
+	err = database.DB.Delete(&produto).Error
+	if err != nil {
+		session.AddFlash("Erro ao tentar deletar o produto na base de dados", "MsgFalha")
+		session.Save()
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	session.AddFlash("Produto deletado com sucesso", "MsgSucesso")
+	session.Save()
+	c.JSON(http.StatusAccepted, gin.H{
+		"produto": produto,
+	})
 }

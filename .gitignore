@@ -1,7 +1,14 @@
+# Estilização de código
 node_modules/
 package-lock.json
 package.json
 .prettierrc
+
+# Ignorar variáveis de ambiente (segurança)
 config.env
+
+# Ignorar todos os arquivos na pasta images
 client/assets/images/*
+
+# Imagem padrão (sem imagem)
 !client/assets/images/not_found.png

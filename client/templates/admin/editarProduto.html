@@ -13,7 +13,7 @@
                 <img src="{{.produto.Imagem}}" class="w-100 object-fit-fill border rounded" alt="" />
               </div>
               <div class="col-12 col-lg-6">
-                <form action="/admin/produtos/edit?id={{.produto.ID}}" method="post" enctype="multipart/form-data">
+                <form action="/admin/produtos/editar?id={{.produto.ID}}" method="post" enctype="multipart/form-data">
                   <div class="row mb-3">
                     <div class="col-12">
                       <div class="form-floating">
@@ -68,14 +68,24 @@
             {{ if .erro }}
             <div class="alert alert-danger my-3" role="alert">{{.erro}}</div>
             {{ end }} {{ if .message }}
-            <div class="alert alert-success my-3" role="alert">{{.message}}</div>
+            <div class="alert alert-success my-3" role="alert">{{.meswwsage}}</div>
             {{ end }}
           </div>
         </div>
       </section>
     </main>
 
-    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}}
+    {{template "_bsScript.html" .}} {{template "_darkModeScript.html" .}} {{template "_axiosScript.html" .}}
+
+    <script>
+      const client = axios.create({
+        baseURL: window.location.origin,
+      })
+      function onDelete(id) {
+        axios.delete(`admin/produtos/removeImagem?id=${id}`)
+        .then((response));
+      }
+    </script>
 
   </body>
 </html>

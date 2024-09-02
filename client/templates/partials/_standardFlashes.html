@@ -1,0 +1,17 @@
+{{ if .MsgFalha }}
+    {{range .MsgFalha}}
+        <div class="alert alert-danger my-3" role="alert">{{.}}</div>
+    {{ end }}
+{{ end }}
+
+{{ if .MsgInfo }}
+    {{ range .MsgInfo}}
+        <div class="alert alert-warning my-3" role="alert">{{.}}</div>
+    {{ end }}
+{{ end }}
+
+{{ if .MsgSucesso }}
+    {{ range .MsgSucesso}}
+        <div class="alert alert-success my-3 w-auto" role="alert">{{.}}</div>
+    {{ end }}
+{{ end }}
