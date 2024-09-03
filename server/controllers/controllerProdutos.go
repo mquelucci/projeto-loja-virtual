@@ -206,16 +206,6 @@ func RemoverImagemProduto(c *gin.Context) {
 
 }
 
-// DeletarProduto godoc
-//
-//	@Summary		Deleta o produto da loja
-//	@Description	Através do ID informado, realiza o soft-delete no banco de dados
-//	@Tags			produtos
-//	@Produce		json
-//	@Param			id	query		int	true	"Account ID"
-//	@Success		202	{object}	string
-//	@Failure		500	{object}	string
-//	@Router			/admin/delete [delete]
 func DeletarProduto(c *gin.Context) {
 	session := sessions.Default(c)
 	id := c.Query("id")

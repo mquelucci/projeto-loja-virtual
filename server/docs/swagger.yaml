@@ -1,27 +1,24 @@
+definitions:
+  responses.Error:
+    properties:
+      message:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
-  /admin/delete:
-    delete:
-      description: Através do ID informado, realiza o soft-delete no banco de dados
-      parameters:
-      - description: Account ID
-        in: query
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
+  /admin/autenticar:
+    post:
+      description: |-
+        Através dos dados fornecidos via formulário HTML,
+        compara com o banco de dados para autenticar ou rejeitar
       responses:
-        "202":
-          description: Accepted
+        "404":
+          description: Not Found
           schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Deleta o produto da loja
+            $ref: '#/definitions/responses.Error'
+      summary: Faz a autenticação do usuário
       tags:
-      - produtos
+      - auth
+      - user
 swagger: "2.0"

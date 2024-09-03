@@ -7,16 +7,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	_ "github.com/mquelucci/projeto-loja-virtual/server/responses"
 )
 
+// Autenticar Faz a autenticação do usuário
+// @Summary Faz a autenticação do usuário
+// @Description Através dos dados fornecidos via formulário HTML,
+// @Description compara com o banco de dados para autenticar ou rejeitar
+// @Tags auth,user
+// @Success 301
+// @Failure 404 {object} responses.Error
+// @Router /autenticar [post]
 func Autenticar(c *gin.Context) {
-	//Grava usuario e senha recebidos do formulário
 	usuario := c.PostForm("usuario")
 	senha := c.PostForm("senha")
-
-	//Cria uma variável do modelo Admin para receber os dados
-	//de acesso de administrador cadastrados no banco,
-	//caso o usuário e senha informados coincidam com o que tem no banco de dados
 	var admin models.Admin
 	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{

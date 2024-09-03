@@ -11,10 +11,17 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title Loja Virtual
+// @version 1.0
+// @description API para aplicação de loja virtual simples
+// @host localhost:8080
+// @BasePath /admin
+// @schemes http
+
 func HandleRequests() {
 	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = "/admin"
 	r.MaxMultipartMemory = 8 << 20
 
 	store := cookie.NewStore([]byte("lojavirtual"))

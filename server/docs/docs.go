@@ -15,38 +15,31 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/delete": {
-            "delete": {
-                "description": "Através do ID informado, realiza o soft-delete no banco de dados",
-                "produces": [
-                    "application/json"
-                ],
+        "/admin/autenticar": {
+            "post": {
+                "description": "Através dos dados fornecidos via formulário HTML,\ncompara com o banco de dados para autenticar ou rejeitar",
                 "tags": [
-                    "produtos"
+                    "auth",
+                    "user"
                 ],
-                "summary": "Deleta o produto da loja",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "Faz a autenticação do usuário",
                 "responses": {
-                    "202": {
-                        "description": "Accepted",
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/responses.Error"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "responses.Error": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         }
