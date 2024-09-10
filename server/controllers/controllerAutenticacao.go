@@ -5,46 +5,55 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
-	_ "github.com/mquelucci/projeto-loja-virtual/server/responses"
 )
 
-// Autenticar Faz a autenticação do usuário
+// Autenticar godoc
 // @Summary Faz a autenticação do usuário
-// @Description Através dos dados fornecidos via formulário HTML,
-// @Description compara com o banco de dados para autenticar ou rejeitar
-// @Tags auth,user
-// @Success 301
-// @Failure 404 {object} responses.Error
-// @Router /autenticar [post]
+// @Description Através dos dados fornecidos via formulário HTML, compara com o banco de dados para autenticar ou rejeitar
+// @Tags auth, admin
+// @Accept mpfd
+// @Produce json
+// @Param usuario formData models.AdminBase true "Dados do usuário"
+// @Success 200 {object} responses.Message
+// @Failure 401 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /admin/autenticar [post]
 func Autenticar(c *gin.Context) {
-	usuario := c.PostForm("usuario")
+	usuario := c.PostForm("nome")
 	senha := c.PostForm("senha")
 	var admin models.Admin
 	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
-		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
-			"Error": "Credenciais inválidas",
-		})
+		c.JSON(http.StatusUnauthorized, responses.Error{Message: err.Error()})
 		return
 	}
 	session := sessions.Default(c)
 	session.Set("auth", true)
 	err := session.Save()
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, responses.Error{Message: err.Error()})
 		return
 	}
-	c.Redirect(http.StatusMovedPermanently, "/admin")
+	c.JSON(http.StatusOK, responses.Message{Message: "Usuário autenticado"})
 }
 
+// FazerLogout godoc
+// @Summary Faz o logout do usuário
+// @Description Remove a autenticação da sessão do usuário atual
+// @Tags auth, admin
+// @Produce json
+// @Success 200 {object} responses.Message
+// @Failure 500 {object} responses.Error
+// @Router /admin/logout [post]
 func FazerLogout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Delete("auth")
 	err := session.Save()
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, responses.Error{Message: err.Error()})
 		return
 	}
-	c.Redirect(http.StatusFound, "/admin/login")
+	c.JSON(http.StatusOK, responses.Message{Message: "Usuário deslogado"})
 }

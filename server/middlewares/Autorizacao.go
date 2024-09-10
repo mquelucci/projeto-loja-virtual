@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
 )
 
 func Auth() gin.HandlerFunc {
@@ -12,7 +13,7 @@ func Auth() gin.HandlerFunc {
 		session := sessions.Default(c)
 		auth := session.Get("auth")
 		if auth == nil {
-			c.Redirect(http.StatusFound, "/admin/login")
+			c.JSON(http.StatusUnauthorized, responses.Error{Message: "Usuário não autorizado!"})
 			c.Abort()
 			return
 		}

@@ -8,24 +8,48 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
 	"github.com/mquelucci/projeto-loja-virtual/server/utils"
 )
 
+// BuscarTodosProdutos godoc
+// @Summary Busca todos os produtos
+// @Description Busca e retorna um JSON no modelo de produtos com todos os produtos não deletados
+// @Tags produtos, admin
+// @Produce json
+// @Success 200 {object} models.Produto
+// @Failure 401 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /admin/produtos [get]
+func BuscarTodosProdutos(c *gin.Context) {
+	produtos := []models.Produto{}
+	err := database.DB.Order("descricao ASC").Find(&produtos).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.Error{Message: err.Error()})
+	}
+	c.JSON(http.StatusOK, &produtos)
+}
+
+// CriarProduto godoc
+// @Summary Cria um produto
+// @Description Cria um produto através dos dados recebidos via formulário do cliente
+// @Tags produtos, admin
+// @Accept mpfd
+// @Produce json
+// @Param produto formData models.ProdutoBase true "Criar produto"
+// @Param imagem formData file false "Imagem do Produto"
+// @Success 200 {object} models.Produto
+// @Failure 401 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /admin/produtos/criar [post]
 func CriarProduto(c *gin.Context) {
 	var produto models.Produto
-	session := sessions.Default(c)
-
 	descricao := c.PostForm("descricao")
 	err := utils.ProdutoDuplo(descricao, false, &produto)
 	if err != nil {
-		msg := err.Error()
-		session.AddFlash(msg, "MsgInfo")
-		session.Save()
-		c.JSON(http.StatusBadRequest, gin.H{
-			"erro": err.Error(),
-		})
+		c.JSON(http.StatusBadRequest, responses.Error{Message: err.Error()})
 		return
 	}
 	produto.Descricao = descricao
@@ -37,11 +61,8 @@ func CriarProduto(c *gin.Context) {
 	} else {
 		err := utils.TratarImagemProduto(c, imagem, &produto)
 		if err != nil {
-			msg := "Erro no tratamento de imagem do produto" + err.Error()
-			session.AddFlash(msg, "MsgFalha")
-			session.Save()
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"erro": err.Error(),
+				"erro": "Erro no tratamento de imagem do produto" + err.Error(),
 			})
 			return
 		}
@@ -50,11 +71,8 @@ func CriarProduto(c *gin.Context) {
 
 	preco, err := strconv.ParseFloat(c.PostForm("preco"), 64)
 	if err != nil {
-		msg := "Erro na conversão de preço" + err.Error()
-		session.AddFlash(msg, "MsgFalha")
-		session.Save()
 		c.JSON(http.StatusBadRequest, gin.H{
-			"erro": err.Error(),
+			"erro": "Erro na conversão de preço" + err.Error(),
 		})
 		return
 	}
@@ -71,33 +89,23 @@ func CriarProduto(c *gin.Context) {
 	}
 
 	if err := models.ValidaProduto(&produto); err != nil {
-		msg := "AVISO! - Erro na validação do produto: " + err.Error()
-		session.AddFlash(msg, "MsgFalha")
-		session.Save()
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"erro": err.Error(),
+			"erro": "AVISO! - Erro na validação do produto: " + err.Error(),
 		})
 		return
 	}
 
 	err = database.DB.Create(&produto).Error
 	if err != nil {
-		msg := "Erro na criação do produto: " + err.Error()
-		session.AddFlash(msg, "MsgFalha")
-		session.Save()
 
 		c.JSON(http.StatusBadRequest, gin.H{
-			"erro": err.Error(),
+			"erro": "Erro na criação do produto: " + err.Error(),
 		})
 		return
 	}
 
-	session.AddFlash("Produto criado com sucesso", "MsgSucesso")
-	session.Save()
-	c.JSON(http.StatusCreated, gin.H{
-		"produto": produto,
-	})
+	c.JSON(http.StatusCreated, &produto)
 
 }
 

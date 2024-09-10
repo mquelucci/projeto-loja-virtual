@@ -17,15 +17,169 @@ const docTemplate = `{
     "paths": {
         "/admin/autenticar": {
             "post": {
-                "description": "Através dos dados fornecidos via formulário HTML,\ncompara com o banco de dados para autenticar ou rejeitar",
+                "description": "Através dos dados fornecidos via formulário HTML, compara com o banco de dados para autenticar ou rejeitar",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "auth",
-                    "user"
+                    "admin"
                 ],
                 "summary": "Faz a autenticação do usuário",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "nome",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "senha",
+                        "in": "formData"
+                    }
+                ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Message"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/logout": {
+            "post": {
+                "description": "Remove a autenticação da sessão do usuário atual",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth",
+                    "admin"
+                ],
+                "summary": "Faz o logout do usuário",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Message"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos": {
+            "get": {
+                "description": "Busca e retorna um JSON no modelo de produtos com todos os produtos não deletados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos",
+                    "admin"
+                ],
+                "summary": "Busca todos os produtos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Produto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos/criar": {
+            "post": {
+                "description": "Cria um produto através dos dados recebidos via formulário do cliente",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos",
+                    "admin"
+                ],
+                "summary": "Cria um produto",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "name": "ativo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "descricao",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "name": "preco",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "quantidade",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Imagem do Produto",
+                        "name": "imagem",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Produto"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/responses.Error"
                         }
@@ -35,7 +189,59 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "models.Produto": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "imagem": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                },
+                "quantidade": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "responses.Error": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "responses.Message": {
             "type": "object",
             "properties": {
                 "message": {

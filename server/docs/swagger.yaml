@@ -1,5 +1,41 @@
 definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.Produto:
+    properties:
+      ativo:
+        type: boolean
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      descricao:
+        type: string
+      id:
+        type: integer
+      imagem:
+        type: string
+      preco:
+        type: number
+      quantidade:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   responses.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  responses.Message:
     properties:
       message:
         type: string
@@ -9,16 +45,116 @@ info:
 paths:
   /admin/autenticar:
     post:
-      description: |-
-        Através dos dados fornecidos via formulário HTML,
-        compara com o banco de dados para autenticar ou rejeitar
+      consumes:
+      - multipart/form-data
+      description: Através dos dados fornecidos via formulário HTML, compara com o
+        banco de dados para autenticar ou rejeitar
+      parameters:
+      - in: formData
+        name: nome
+        type: string
+      - in: formData
+        name: senha
+        type: string
+      produces:
+      - application/json
       responses:
-        "404":
-          description: Not Found
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Faz a autenticação do usuário
       tags:
       - auth
-      - user
+      - admin
+  /admin/logout:
+    post:
+      description: Remove a autenticação da sessão do usuário atual
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Faz o logout do usuário
+      tags:
+      - auth
+      - admin
+  /admin/produtos:
+    get:
+      description: Busca e retorna um JSON no modelo de produtos com todos os produtos
+        não deletados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Produto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca todos os produtos
+      tags:
+      - produtos
+      - admin
+  /admin/produtos/criar:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Cria um produto através dos dados recebidos via formulário do cliente
+      parameters:
+      - in: formData
+        name: ativo
+        type: boolean
+      - in: formData
+        name: descricao
+        type: string
+      - in: formData
+        name: preco
+        type: number
+      - in: formData
+        name: quantidade
+        type: integer
+      - description: Imagem do Produto
+        in: formData
+        name: imagem
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Produto'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Cria um produto
+      tags:
+      - produtos
+      - admin
 swagger: "2.0"

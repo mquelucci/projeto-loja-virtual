@@ -5,13 +5,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type Produto struct {
-	gorm.Model
+type ProdutoBase struct {
 	Descricao  string  `json:"descricao" validate:"nonzero, nonnil" gorm:"notNull"`
 	Preco      float64 `json:"preco" validade:"nonnil" gorm:"notNull"`
 	Quantidade int     `json:"quantidade" validate:"nonnil" gorm:"notNull"`
-	Imagem     string  `json:"imagem"`
-	Ativo      bool    `json:"ativo" validate:"nonnil" gorm:"notNull"`
+
+	Ativo bool `json:"ativo" validate:"nonnil" gorm:"notNull"`
+}
+
+type Produto struct {
+	gorm.Model
+	ProdutoBase
+	Imagem string `json:"imagem"`
 }
 
 func ValidaProduto(produto *Produto) error {

@@ -2,8 +2,12 @@ package models
 
 import "gorm.io/gorm"
 
-type Admin struct {
-	gorm.Model
+type AdminBase struct {
 	Nome  string
 	Senha string
+}
+
+type Admin struct {
+	gorm.Model `swaggerignore:"true"`
+	AdminBase
 }
