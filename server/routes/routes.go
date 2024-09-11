@@ -39,12 +39,12 @@ func HandleRequests() {
 		auth.POST("/produtos/editar", controllers.EditarProduto)
 		auth.POST("/logout", controllers.FazerLogout)
 		auth.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		auth.DELETE("/produtos/delete", controllers.DeletarProduto)
+		auth.DELETE("/produtos/deletar", controllers.DeletarProduto)
 		auth.GET("/produtos", controllers.BuscarTodosProdutos)
 
 	}
 
-	r.NoRoute(controllers.ExibeHTML404)
+	r.NoRoute(controllers.NotFound)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run()
 }

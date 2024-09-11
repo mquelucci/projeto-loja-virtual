@@ -26,14 +26,14 @@ func Autenticar(c *gin.Context) {
 	senha := c.PostForm("senha")
 	var admin models.Admin
 	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, responses.Error{Message: err.Error()})
+		c.JSON(http.StatusUnauthorized, responses.Error{Erro: err.Error()})
 		return
 	}
 	session := sessions.Default(c)
 	session.Set("auth", true)
 	err := session.Save()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.Error{Message: err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, responses.Message{Message: "Usuário autenticado"})
@@ -52,7 +52,7 @@ func FazerLogout(c *gin.Context) {
 	session.Delete("auth")
 	err := session.Save()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.Error{Message: err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, responses.Message{Message: "Usuário deslogado"})

@@ -94,7 +94,22 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Produto"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Produto"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "401": {
@@ -155,10 +170,231 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Produto"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Produto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos/deletar": {
+            "post": {
+                "description": "Deleta um produto específico através do Id fornecido via URL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos",
+                    "admin"
+                ],
+                "summary": "Deleta um produto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id do produto",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Produto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos/editar": {
+            "post": {
+                "description": "Editar um produto através do id informado na url e dos dados recebidos via formulário do cliente",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos",
+                    "admin"
+                ],
+                "summary": "Editar um produto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id do produto",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "ativo",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "descricao",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "name": "preco",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "quantidade",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Imagem do Produto",
+                        "name": "imagem",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Produto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos/removeImagem": {
+            "post": {
+                "description": "Remove a imagem de um produto específico através do Id fornecido via URL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos",
+                    "admin"
+                ],
+                "summary": "Remove a imagem de um produto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id do produto",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Produto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
                         }
                     },
                     "401": {
@@ -225,7 +461,7 @@
         "responses.Error": {
             "type": "object",
             "properties": {
-                "message": {
+                "erro": {
                     "type": "string"
                 }
             }
@@ -233,6 +469,7 @@
         "responses.Message": {
             "type": "object",
             "properties": {
+                "data": {},
                 "message": {
                     "type": "string"
                 }

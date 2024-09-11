@@ -13,7 +13,7 @@ func Auth() gin.HandlerFunc {
 		session := sessions.Default(c)
 		auth := session.Get("auth")
 		if auth == nil {
-			c.JSON(http.StatusUnauthorized, responses.Error{Message: "Usuário não autorizado!"})
+			c.JSON(http.StatusUnauthorized, responses.Error{Erro: "Usuário não autorizado!"})
 			c.Abort()
 			return
 		}
