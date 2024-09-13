@@ -25,22 +25,22 @@ func ConectaBanco() {
 		if err != nil {
 			panic("Não foi possível conectar ao banco de dados" + err.Error())
 		}
-		DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{})
 	case "postgres":
 		stringDeConexao := os.Getenv("CONNECTIONSTRING")
 		DB, err = gorm.Open(postgres.Open(stringDeConexao), &gorm.Config{})
 		if err != nil {
 			panic("Não foi possível conectar ao banco de dados" + err.Error())
 		}
-		DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{})
 	case "mysql":
 		stringDeConexao := os.Getenv("CONNECTIONSTRING")
 		DB, err = gorm.Open(mysql.Open(stringDeConexao), &gorm.Config{})
 		if err != nil {
 			panic("Não foi possível conectar ao banco de dados" + err.Error())
 		}
-		DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{})
+
 	default:
 		panic("Nenhum tipo de banco de dados informado no arquivo config.env")
 	}
+	// Mantém a estrutura do banco de dados sempre atualizadas
+	DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{}, models.Venda{}, models.ItensVenda{})
 }
