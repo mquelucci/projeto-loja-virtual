@@ -7,6 +7,29 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.Config:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      createdAt:
+        type: string
+      endereco:
+        type: string
+      id:
+        type: integer
+      nomeLoja:
+        type: string
+      numero:
+        type: integer
+      uf:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.Produto:
     properties:
       ativo:
@@ -73,6 +96,76 @@ paths:
       summary: Faz a autenticação do usuário
       tags:
       - auth
+      - admin
+  /admin/configuracoes:
+    get:
+      description: Busca as configurações da loja virtual e retorna no JSON
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Config'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca as configurações da loja virtual
+      tags:
+      - admin
+    post:
+      description: Altera as configurações da loja virtual conforme informações enviadas
+        pelo formulário
+      parameters:
+      - in: formData
+        name: bairro
+        type: string
+      - in: formData
+        name: cep
+        type: integer
+      - in: formData
+        name: cidade
+        type: string
+      - in: formData
+        name: endereco
+        type: string
+      - in: formData
+        name: nomeLoja
+        type: string
+      - in: formData
+        name: numero
+        type: integer
+      - in: formData
+        name: uf
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Config'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Altera as configurações da loja virtual
+      tags:
       - admin
   /admin/logout:
     post:

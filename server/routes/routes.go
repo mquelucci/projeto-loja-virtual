@@ -41,6 +41,7 @@ func HandleRequests() {
 		auth.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
 		auth.DELETE("/produtos/deletar", controllers.DeletarProduto)
 		auth.GET("/produtos", controllers.BuscarTodosProdutos)
+		auth.GET("/configuracoes", controllers.BuscarConfiguracoes)
 
 	}
 

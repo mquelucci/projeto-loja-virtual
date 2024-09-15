@@ -130,8 +130,7 @@ func EditarProduto(c *gin.Context) {
 
 	// Tratamento da descrição
 	descricao := c.PostForm("descricao")
-	err := utils.ProdutoDuplo(descricao, true, &produto)
-	if err != nil {
+	if err := utils.ProdutoDuplo(descricao, true, &produto); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: err.Error()})
 		return
 	}
@@ -142,8 +141,7 @@ func EditarProduto(c *gin.Context) {
 	if err != nil {
 		log.Println("Nenhum arquivo carregado. Mantendo o registro de imagem do produto.")
 	} else {
-		err := utils.TratarImagemProduto(c, imagem, &produto)
-		if err != nil {
+		if err := utils.TratarImagemProduto(c, imagem, &produto); err != nil {
 			c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro no tratamento de imagem do produto" + err.Error()})
 			return
 		}
@@ -179,8 +177,7 @@ func EditarProduto(c *gin.Context) {
 		return
 	}
 
-	err = database.DB.Save(&produto).Error
-	if err != nil {
+	if err = database.DB.Save(&produto).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro na edição do produto: " + err.Error()})
 		return
 	}
@@ -206,8 +203,7 @@ func RemoverImagemProduto(c *gin.Context) {
 		pathImagem := "./client" + produto.Imagem
 		os.Remove(pathImagem)
 		produto.Imagem = "/assets/images/not_found.png"
-		err := database.DB.Save(&produto).Error
-		if err != nil {
+		if err := database.DB.Save(&produto).Error; err != nil {
 			c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do produto: " + err.Error()})
 			return
 		}
@@ -234,8 +230,7 @@ func DeletarProduto(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
 		return
 	}
-	err = database.DB.Delete(&produto).Error
-	if err != nil {
+	if err = database.DB.Delete(&produto).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
 		return
 	}

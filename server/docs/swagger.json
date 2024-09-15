@@ -52,6 +52,123 @@
                 }
             }
         },
+        "/admin/configuracoes": {
+            "get": {
+                "description": "Busca as configurações da loja virtual e retorna no JSON",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Busca as configurações da loja virtual",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Config"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Altera as configurações da loja virtual conforme informações enviadas pelo formulário",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Altera as configurações da loja virtual",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "bairro",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "cep",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cidade",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "endereco",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "nomeLoja",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "numero",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "uf",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Config"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/logout": {
             "post": {
                 "description": "Remove a autenticação da sessão do usuário atual",
@@ -423,6 +540,41 @@
                 "valid": {
                     "description": "Valid is true if Time is not NULL",
                     "type": "boolean"
+                }
+            }
+        },
+        "models.Config": {
+            "type": "object",
+            "properties": {
+                "bairro": {
+                    "type": "string"
+                },
+                "cep": {
+                    "type": "integer"
+                },
+                "cidade": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "endereco": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nomeLoja": {
+                    "type": "string"
+                },
+                "numero": {
+                    "type": "integer"
+                },
+                "uf": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },
