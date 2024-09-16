@@ -27,21 +27,29 @@ func HandleRequests() {
 	store := cookie.NewStore([]byte("lojavirtual"))
 	r.Use(sessions.Sessions("lojavirtual", store))
 
-	noAuth := r.Group("/admin")
+	// clientes := r.Group("/cliente") {
+
+	// }
+
+	noAuthAdmin := r.Group("/admin")
 	{
-		noAuth.POST("/autenticar", controllers.Autenticar)
+		noAuthAdmin.POST("/autenticar", controllers.Autenticar)
 	}
 
-	auth := r.Group("/admin").Use(middlewares.Auth())
+	authAdmin := r.Group("/admin").Use(middlewares.Auth())
 	{
-		auth.POST("/configuracoes", controllers.AlterarConfiguracoes)
-		auth.POST("/produtos/criar", controllers.CriarProduto)
-		auth.POST("/produtos/editar", controllers.EditarProduto)
-		auth.POST("/logout", controllers.FazerLogout)
-		auth.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		auth.DELETE("/produtos/deletar", controllers.DeletarProduto)
-		auth.GET("/produtos", controllers.BuscarTodosProdutos)
-		auth.GET("/configuracoes", controllers.BuscarConfiguracoes)
+		authAdmin.POST("/configuracoes", controllers.AlterarConfiguracoes)
+		authAdmin.POST("/produtos/criar", controllers.CriarProduto)
+		authAdmin.POST("/produtos/editar", controllers.EditarProduto)
+		authAdmin.POST("/logout", controllers.FazerLogout)
+		authAdmin.POST("/clientes/criar", controllers.CriarCliente)
+
+		authAdmin.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
+		authAdmin.DELETE("/produtos/deletar", controllers.DeletarProduto)
+
+		authAdmin.GET("/produtos", controllers.BuscarTodosProdutos)
+		authAdmin.GET("/configuracoes", controllers.BuscarConfiguracoes)
+		authAdmin.GET("/clientes", controllers.BuscarClientes)
 
 	}
 
