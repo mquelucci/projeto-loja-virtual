@@ -194,7 +194,7 @@ func EditarProduto(c *gin.Context) {
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos/removeImagem [post]
+// @Router /admin/produtos/removeImagem [delete]
 func RemoverImagemProduto(c *gin.Context) {
 	id := c.Query("id")
 	var produto models.Produto
@@ -221,7 +221,7 @@ func RemoverImagemProduto(c *gin.Context) {
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 401 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos/deletar [post]
+// @Router /admin/produtos/deletar [delete]
 func DeletarProduto(c *gin.Context) {
 	id := c.Query("id")
 	var produto models.Produto

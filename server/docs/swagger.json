@@ -52,6 +52,206 @@
                 }
             }
         },
+        "/admin/clientes/criar": {
+            "post": {
+                "description": "Cria um cliente da loja virtual conforme informações enviadas pelo formulário",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "clientes"
+                ],
+                "summary": "Cria um cliente da loja virtual",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "cpf_cnpj",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "email",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "nome",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "telefone",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "bairro",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "cep",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cidade",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "endereco",
+                        "in": "formData"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "name": "numero",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "uf",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Cliente"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/clientes/todos": {
+            "get": {
+                "description": "Busca todos os clientes da loja virtual e retorna no JSON",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "clientes"
+                ],
+                "summary": "Busca todos os clientes da loja virtual",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Cliente"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/clientes/{cpf_cnpj}": {
+            "get": {
+                "description": "Busca o cliente da loja virtual pelo seu CPF ou CNPJ e retorna no JSON",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin",
+                    "clientes"
+                ],
+                "summary": "Busca o cliente da loja virtual pelo seu CPF ou CNPJ",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "CPF_CNPJ",
+                        "name": "cpf_cnpj",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Cliente"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/configuracoes": {
             "get": {
                 "description": "Busca as configurações da loja virtual e retorna no JSON",
@@ -327,7 +527,7 @@
             }
         },
         "/admin/produtos/deletar": {
-            "post": {
+            "delete": {
                 "description": "Deleta um produto específico através do Id fornecido via URL",
                 "produces": [
                     "application/json"
@@ -470,7 +670,7 @@
             }
         },
         "/admin/produtos/removeImagem": {
-            "post": {
+            "delete": {
                 "description": "Remove a imagem de um produto específico através do Id fornecido via URL",
                 "produces": [
                     "application/json"
@@ -543,6 +743,41 @@
                 }
             }
         },
+        "models.Cliente": {
+            "type": "object",
+            "properties": {
+                "cpf_cnpj": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "endereco": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Endereco"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "telefone": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Config": {
             "type": "object",
             "properties": {
@@ -569,6 +804,45 @@
                 },
                 "numero": {
                     "type": "integer"
+                },
+                "uf": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Endereco": {
+            "type": "object",
+            "properties": {
+                "bairro": {
+                    "type": "string"
+                },
+                "cep": {
+                    "type": "integer"
+                },
+                "cidade": {
+                    "type": "string"
+                },
+                "clienteID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "endereco": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "numero": {
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "uf": {
                     "type": "string"

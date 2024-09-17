@@ -49,7 +49,8 @@ func HandleRequests() {
 
 		authAdmin.GET("/produtos", controllers.BuscarTodosProdutos)
 		authAdmin.GET("/configuracoes", controllers.BuscarConfiguracoes)
-		authAdmin.GET("/clientes", controllers.BuscarClientes)
+		authAdmin.GET("/clientes/todos", controllers.BuscarTodosClientes)
+		authAdmin.GET("/clientes/:cpf_cnpj", controllers.BuscarCliente)
 
 	}
 

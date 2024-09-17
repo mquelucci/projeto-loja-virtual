@@ -6,9 +6,10 @@ import (
 )
 
 type ClienteBase struct {
-	Nome     string     `json:"nome" validate:"nonzero, nonnil" gorm:"unique;not null"`
+	Nome     string     `json:"nome" validate:"nonzero, nonnil" gorm:"not null"`
 	Telefone string     `json:"telefone" validade:"min=8, max=9, nonnil" gorm:"not null"`
 	Email    string     `json:"email" validade:"nonzero, nonnil" gorm:"not null"`
+	CpfCnpj  string     `json:"cpf_cnpj" validade:"nonzero, nonnil" gorm:"unique;not null"`
 	Endereco []Endereco `json:"endereco" validate:"nonzero, nonnil" gorm:"not null"`
 }
 

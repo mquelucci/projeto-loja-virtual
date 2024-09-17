@@ -7,6 +7,29 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.Cliente:
+    properties:
+      cpf_cnpj:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      endereco:
+        items:
+          $ref: '#/definitions/models.Endereco'
+        type: array
+      id:
+        type: integer
+      nome:
+        type: string
+      telefone:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.Config:
     properties:
       bairro:
@@ -24,6 +47,32 @@ definitions:
       nomeLoja:
         type: string
       numero:
+        type: integer
+      uf:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Endereco:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      clienteID:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      endereco:
+        type: string
+      id:
+        type: integer
+      numero:
+        minimum: 1
         type: integer
       uf:
         type: string
@@ -97,6 +146,129 @@ paths:
       tags:
       - auth
       - admin
+  /admin/clientes/{cpf_cnpj}:
+    get:
+      description: Busca o cliente da loja virtual pelo seu CPF ou CNPJ e retorna
+        no JSON
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca o cliente da loja virtual pelo seu CPF ou CNPJ
+      tags:
+      - admin
+      - clientes
+  /admin/clientes/criar:
+    post:
+      description: Cria um cliente da loja virtual conforme informações enviadas pelo
+        formulário
+      parameters:
+      - in: formData
+        name: cpf_cnpj
+        type: string
+      - in: formData
+        name: email
+        type: string
+      - in: formData
+        name: nome
+        type: string
+      - in: formData
+        name: telefone
+        type: string
+      - in: formData
+        name: bairro
+        type: string
+      - in: formData
+        name: cep
+        type: integer
+      - in: formData
+        name: cidade
+        type: string
+      - in: formData
+        name: endereco
+        type: string
+      - in: formData
+        minimum: 1
+        name: numero
+        type: integer
+      - in: formData
+        name: uf
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Cria um cliente da loja virtual
+      tags:
+      - admin
+      - clientes
+  /admin/clientes/todos:
+    get:
+      description: Busca todos os clientes da loja virtual e retorna no JSON
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cliente'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca todos os clientes da loja virtual
+      tags:
+      - admin
+      - clientes
   /admin/configuracoes:
     get:
       description: Busca as configurações da loja virtual e retorna no JSON
@@ -266,7 +438,7 @@ paths:
       - produtos
       - admin
   /admin/produtos/deletar:
-    post:
+    delete:
       description: Deleta um produto específico através do Id fornecido via URL
       parameters:
       - description: Id do produto
@@ -355,7 +527,7 @@ paths:
       - produtos
       - admin
   /admin/produtos/removeImagem:
-    post:
+    delete:
       description: Remove a imagem de um produto específico através do Id fornecido
         via URL
       parameters:
