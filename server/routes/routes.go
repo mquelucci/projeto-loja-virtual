@@ -1,8 +1,9 @@
 package routes
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/server/controllers"
 	docs "github.com/mquelucci/projeto-loja-virtual/server/docs"
@@ -24,8 +25,9 @@ func HandleRequests() {
 	docs.SwaggerInfo.BasePath = "/"
 	r.MaxMultipartMemory = 8 << 20
 
-	store := cookie.NewStore([]byte("lojavirtual"))
+	store := memstore.NewStore([]byte("lojavirtual"))
 	r.Use(sessions.Sessions("lojavirtual", store))
+	r.Use(cors.Default())
 
 	// clientes := r.Group("/cliente") {
 
