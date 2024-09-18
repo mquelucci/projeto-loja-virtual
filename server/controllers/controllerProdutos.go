@@ -42,6 +42,7 @@ func BuscarTodosProdutos(c *gin.Context) {
 // @Success 201 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
+// @Failure 409 {object} responses.Error
 // @Failure 500 {object} responses.Error
 // @Router /admin/produtos/criar [post]
 func CriarProduto(c *gin.Context) {
@@ -51,7 +52,7 @@ func CriarProduto(c *gin.Context) {
 	descricao := c.PostForm("descricao")
 	err := utils.ProdutoDuplo(descricao, false, &produto)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: err.Error()})
+		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
 	produto.Descricao = descricao
@@ -121,6 +122,7 @@ func CriarProduto(c *gin.Context) {
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
+// @Failure 409 {object} responses.Error
 // @Failure 500 {object} responses.Error
 // @Router /admin/produtos/editar [post]
 func EditarProduto(c *gin.Context) {
@@ -131,7 +133,7 @@ func EditarProduto(c *gin.Context) {
 	// Tratamento da descrição
 	descricao := c.PostForm("descricao")
 	if err := utils.ProdutoDuplo(descricao, true, &produto); err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: err.Error()})
+		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
 	produto.Descricao = descricao
