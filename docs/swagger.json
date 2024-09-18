@@ -76,6 +76,11 @@
                     },
                     {
                         "type": "string",
+                        "name": "empresa",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "nome",
                         "in": "formData"
                     },
@@ -105,7 +110,6 @@
                         "in": "formData"
                     },
                     {
-                        "minimum": 1,
                         "type": "integer",
                         "name": "numero",
                         "in": "formData"
@@ -517,6 +521,12 @@
                             "$ref": "#/definitions/responses.Error"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -660,6 +670,12 @@
                             "$ref": "#/definitions/responses.Error"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -758,6 +774,9 @@
                 "email": {
                     "type": "string"
                 },
+                "empresa": {
+                    "type": "string"
+                },
                 "endereco": {
                     "type": "array",
                     "items": {
@@ -841,8 +860,7 @@
                     "type": "integer"
                 },
                 "numero": {
-                    "type": "integer",
-                    "minimum": 1
+                    "type": "integer"
                 },
                 "uf": {
                     "type": "string"

@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/joho/godotenv"
-	"github.com/mquelucci/projeto-loja-virtual/server/database"
-	"github.com/mquelucci/projeto-loja-virtual/server/routes"
+	"github.com/mquelucci/projeto-loja-virtual/database"
+	"github.com/mquelucci/projeto-loja-virtual/routes"
 )
 
 func main() {

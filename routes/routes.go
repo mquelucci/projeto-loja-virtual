@@ -5,9 +5,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"github.com/mquelucci/projeto-loja-virtual/server/controllers"
-	docs "github.com/mquelucci/projeto-loja-virtual/server/docs"
-	"github.com/mquelucci/projeto-loja-virtual/server/middlewares"
+	"github.com/mquelucci/projeto-loja-virtual/controllers"
+	docs "github.com/mquelucci/projeto-loja-virtual/docs"
+	"github.com/mquelucci/projeto-loja-virtual/middlewares"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

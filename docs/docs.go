@@ -87,6 +87,11 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "name": "empresa",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "name": "nome",
                         "in": "formData"
                     },
@@ -116,7 +121,6 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
-                        "minimum": 1,
                         "type": "integer",
                         "name": "numero",
                         "in": "formData"
@@ -528,6 +532,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Error"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -671,6 +681,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Error"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -769,6 +785,9 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "empresa": {
+                    "type": "string"
+                },
                 "endereco": {
                     "type": "array",
                     "items": {
@@ -852,8 +871,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "numero": {
-                    "type": "integer",
-                    "minimum": 1
+                    "type": "integer"
                 },
                 "uf": {
                     "type": "string"

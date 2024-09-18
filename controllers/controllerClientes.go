@@ -5,10 +5,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
-	"github.com/mquelucci/projeto-loja-virtual/server/database"
-	"github.com/mquelucci/projeto-loja-virtual/server/models"
-	"github.com/mquelucci/projeto-loja-virtual/server/utils"
+	"github.com/mquelucci/projeto-loja-virtual/controllers/responses"
+	"github.com/mquelucci/projeto-loja-virtual/database"
+	"github.com/mquelucci/projeto-loja-virtual/models"
+	"github.com/mquelucci/projeto-loja-virtual/utils"
 )
 
 // BuscarTodosClientes godoc

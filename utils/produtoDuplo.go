@@ -3,8 +3,8 @@ package utils
 import (
 	"errors"
 
-	"github.com/mquelucci/projeto-loja-virtual/server/database"
-	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"github.com/mquelucci/projeto-loja-virtual/database"
+	"github.com/mquelucci/projeto-loja-virtual/models"
 )
 
 func ProdutoDuplo(descricao string, editando bool, produto *models.Produto) error {

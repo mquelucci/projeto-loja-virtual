@@ -17,6 +17,8 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       email:
         type: string
+      empresa:
+        type: string
       endereco:
         items:
           $ref: '#/definitions/models.Endereco'
@@ -72,7 +74,6 @@ definitions:
       id:
         type: integer
       numero:
-        minimum: 1
         type: integer
       uf:
         type: string
@@ -192,6 +193,9 @@ paths:
         name: email
         type: string
       - in: formData
+        name: empresa
+        type: string
+      - in: formData
         name: nome
         type: string
       - in: formData
@@ -210,7 +214,6 @@ paths:
         name: endereco
         type: string
       - in: formData
-        minimum: 1
         name: numero
         type: integer
       - in: formData
@@ -429,6 +432,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
         "500":
           description: Internal Server Error
           schema:
@@ -516,6 +523,10 @@ paths:
             $ref: '#/definitions/responses.Error'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
           schema:
             $ref: '#/definitions/responses.Error'
         "500":

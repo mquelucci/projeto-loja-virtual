@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"github.com/mquelucci/projeto-loja-virtual/models"
 )
 
 func TratarImagemProduto(c *gin.Context, imagem *multipart.FileHeader, produto *models.Produto) error {

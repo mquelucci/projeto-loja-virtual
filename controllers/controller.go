@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
+	"github.com/mquelucci/projeto-loja-virtual/controllers/responses"
 )
 
 func NotFound(c *gin.Context) {

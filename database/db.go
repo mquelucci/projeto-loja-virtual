@@ -3,7 +3,7 @@ package database
 import (
 	"os"
 
-	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"github.com/mquelucci/projeto-loja-virtual/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
