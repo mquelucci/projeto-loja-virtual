@@ -119,3 +119,31 @@ func CriarCliente(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, responses.Message{Message: "Cliente criado com sucesso", Data: cliente})
 }
+
+// DeletarCliente godoc
+// @Summary Deletar um cliente da loja virtual (soft-delete)
+// @Description Deleta um cliente da loja virtual conforme cpf/cnpj informadas na URL
+// @Tags admin, clientes
+// @Produce json
+// @Param cpf_cnpj path int true "CPF_CNPJ"
+// @Success 200 {object} responses.Message{data=models.Cliente}
+// @Failure 401 {object} responses.Error
+// @Failure 404 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /admin/clientes/deletar/{cpf_cnpj} [delete]
+func DeletarCliente(c *gin.Context) {
+	var cliente models.Cliente
+	cpfCnpj := c.Param("cpf_cnpj")
+
+	if err := database.DB.Where("cpf_cnpj =?", cpfCnpj).First(&cliente).Error; err != nil {
+		c.JSON(http.StatusNotFound, responses.Error{Erro: "Cliente não encontrado"})
+		return
+	}
+
+	if err := database.DB.Delete(&cliente).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro na exclusão do cliente: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusAccepted, responses.Message{Message: "Cliente excluído com sucesso", Data: cliente})
+}
