@@ -7,6 +7,9 @@ package.json
 # Ignorar variáveis de ambiente (segurança)
 config.env
 
+# Ignorar banco de dados
+*.db
+
 # Ignorar todos os arquivos na pasta images
 client/assets/images/*
 
