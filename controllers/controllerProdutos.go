@@ -124,7 +124,7 @@ func CriarProduto(c *gin.Context) {
 // @Failure 401 {object} responses.Error
 // @Failure 409 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos/editar [post]
+// @Router /admin/produtos/editar [put]
 func EditarProduto(c *gin.Context) {
 	var produto models.Produto
 	id := c.Query("id")
