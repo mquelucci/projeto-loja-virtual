@@ -8,6 +8,7 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/server/controllers/responses"
 	"github.com/mquelucci/projeto-loja-virtual/server/database"
 	"github.com/mquelucci/projeto-loja-virtual/server/models"
+	"github.com/mquelucci/projeto-loja-virtual/server/utils"
 )
 
 // BuscarTodosClientes godoc
@@ -78,6 +79,11 @@ func CriarCliente(c *gin.Context) {
 		return
 	}
 
+	if len(cep) != 8 {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "O CEP informado não possui 8 dígitos"})
+		return
+	}
+
 	cepConvertido, err := strconv.Atoi(cep)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Não foi possível converter o CEP informado" + err.Error()})
@@ -88,10 +94,21 @@ func CriarCliente(c *gin.Context) {
 	cliente.CpfCnpj = cpfCnpj
 	cliente.Telefone = telefone
 	cliente.Email = email
+
+	if err := models.ValidaEndereco(&models.Endereco{Endereco: endereco, Numero: numeroConvertido, Bairro: bairro, CEP: cepConvertido, Cidade: cidade, UF: uf}); err != nil {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do endereço: " + err.Error()})
+		return
+	}
+
 	cliente.Endereco = append([]models.Endereco{}, models.Endereco{Endereco: endereco, Numero: numeroConvertido, Bairro: bairro, CEP: cepConvertido, Cidade: cidade, UF: uf})
 
 	if err := models.ValidaCliente(&cliente); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do cliente: " + err.Error()})
+		return
+	}
+
+	if err := utils.ClienteDuplo(cpfCnpj, false, &cliente); err != nil {
+		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
 
