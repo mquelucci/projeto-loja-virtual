@@ -38,22 +38,30 @@ func HandleRequests() {
 		noAuthAdmin.POST("/autenticar", controllers.Autenticar)
 	}
 
+	authAdminProdutos := r.Group("/admin/produtos").Use(middlewares.Auth())
+	{
+		authAdminProdutos.GET("/produtos", controllers.BuscarTodosProdutos)
+		authAdminProdutos.POST("/produtos/criar", controllers.CriarProduto)
+		authAdminProdutos.PUT("/produtos/editar", controllers.EditarProduto)
+		authAdminProdutos.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
+		authAdminProdutos.DELETE("/produtos/deletar", controllers.DeletarProduto)
+	}
+
+	authAdminClientes := r.Group("/admin/clientes").Use(middlewares.Auth())
+	{
+
+		authAdminClientes.GET("/clientes/todos", controllers.BuscarTodosClientes)
+		authAdminClientes.GET("/clientes/:cpf_cnpj", controllers.BuscarCliente)
+
+		authAdminClientes.POST("/logout", controllers.FazerLogout)
+		authAdminClientes.POST("/clientes/criar", controllers.CriarCliente)
+
+	}
+
 	authAdmin := r.Group("/admin").Use(middlewares.Auth())
 	{
-		authAdmin.POST("/configuracoes", controllers.AlterarConfiguracoes)
-		authAdmin.POST("/produtos/criar", controllers.CriarProduto)
-		authAdmin.POST("/produtos/editar", controllers.EditarProduto)
-		authAdmin.POST("/logout", controllers.FazerLogout)
-		authAdmin.POST("/clientes/criar", controllers.CriarCliente)
-
-		authAdmin.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		authAdmin.DELETE("/produtos/deletar", controllers.DeletarProduto)
-
-		authAdmin.GET("/produtos", controllers.BuscarTodosProdutos)
 		authAdmin.GET("/configuracoes", controllers.BuscarConfiguracoes)
-		authAdmin.GET("/clientes/todos", controllers.BuscarTodosClientes)
-		authAdmin.GET("/clientes/:cpf_cnpj", controllers.BuscarCliente)
-
+		authAdminClientes.POST("/configuracoes", controllers.AlterarConfiguracoes)
 	}
 
 	r.NoRoute(controllers.NotFound)
