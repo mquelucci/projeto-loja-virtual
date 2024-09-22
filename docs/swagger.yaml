@@ -88,6 +88,15 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.ItensVenda:
+    properties:
+      preco:
+        type: number
+      produto_id:
+        type: integer
+      quantidade:
+        type: integer
+    type: object
   models.Produto:
     properties:
       ativo:
@@ -119,6 +128,15 @@ definitions:
         type: number
       quantidade:
         type: integer
+    type: object
+  models.Venda:
+    properties:
+      cliente_id:
+        type: integer
+      itens_venda:
+        items:
+          $ref: '#/definitions/models.ItensVenda'
+        type: array
     type: object
   responses.Error:
     properties:
@@ -696,4 +714,30 @@ paths:
       summary: Busca todos os produtos
       tags:
       - produtos
+  /admin/vendas/criar:
+    post:
+      consumes:
+      - application/json
+      description: Criar uma venda
+      parameters:
+      - description: Dados da venda
+        in: body
+        name: venda
+        required: true
+        schema:
+          $ref: '#/definitions/models.Venda'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Venda'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Criar uma venda
+      tags:
+      - vendas
 swagger: "2.0"

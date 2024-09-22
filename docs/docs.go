@@ -919,6 +919,46 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/vendas/criar": {
+            "post": {
+                "description": "Criar uma venda",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vendas"
+                ],
+                "summary": "Criar uma venda",
+                "parameters": [
+                    {
+                        "description": "Dados da venda",
+                        "name": "venda",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Venda"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Venda"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1057,6 +1097,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ItensVenda": {
+            "type": "object",
+            "properties": {
+                "preco": {
+                    "type": "number"
+                },
+                "produto_id": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Produto": {
             "type": "object",
             "properties": {
@@ -1103,6 +1157,20 @@ const docTemplate = `{
                 },
                 "quantidade": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Venda": {
+            "type": "object",
+            "properties": {
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "itens_venda": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ItensVenda"
+                    }
                 }
             }
         },
