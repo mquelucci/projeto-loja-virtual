@@ -25,8 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth",
-                    "admin"
+                    "auth"
                 ],
                 "summary": "Faz a autenticação do usuário",
                 "parameters": [
@@ -70,65 +69,18 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin",
                     "clientes"
                 ],
                 "summary": "Cria um cliente da loja virtual",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "cpf_cnpj",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "email",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "empresa",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "nome",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "telefone",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "bairro",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "cep",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "cidade",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "endereco",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "numero",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "uf",
-                        "in": "formData"
+                        "description": "Dados do cliente",
+                        "name": "cliente",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ClienteBase"
+                        }
                     }
                 ],
                 "responses": {
@@ -162,6 +114,145 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.Error"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/clientes/deletar/{cpf_cnpj}": {
+            "delete": {
+                "description": "Deleta um cliente da loja virtual conforme cpf/cnpj informadas na URL",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clientes"
+                ],
+                "summary": "Deletar um cliente da loja virtual (soft-delete)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "CPF_CNPJ",
+                        "name": "cpf_cnpj",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Cliente"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/clientes/editar/{cpf_cnpj}": {
+            "put": {
+                "description": "Edita um cliente da loja virtual conforme o JSON e cpf_cnpj informados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clientes"
+                ],
+                "summary": "Edita um cliente da loja virtual",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "CPF_CNPJ",
+                        "name": "cpf_cnpj",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dados do cliente",
+                        "name": "cliente",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ClienteBase"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Cliente"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -178,7 +269,6 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin",
                     "clientes"
                 ],
                 "summary": "Busca todos os clientes da loja virtual",
@@ -220,7 +310,6 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "admin",
                     "clientes"
                 ],
                 "summary": "Busca o cliente da loja virtual pelo seu CPF ou CNPJ",
@@ -254,6 +343,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.Error"
                         }
@@ -391,8 +486,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth",
-                    "admin"
+                    "auth"
                 ],
                 "summary": "Faz o logout do usuário",
                 "responses": {
@@ -411,88 +505,25 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/produtos": {
-            "get": {
-                "description": "Busca e retorna um JSON no modelo de produtos com todos os produtos não deletados",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "produtos",
-                    "admin"
-                ],
-                "summary": "Busca todos os produtos",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/responses.Message"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/models.Produto"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/responses.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/produtos/criar": {
             "post": {
                 "description": "Cria um produto através dos dados recebidos via formulário do cliente",
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "produtos",
-                    "admin"
+                    "produtos"
                 ],
                 "summary": "Cria um produto",
                 "parameters": [
                     {
-                        "type": "boolean",
-                        "name": "ativo",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "descricao",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "name": "preco",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "quantidade",
-                        "in": "formData"
+                        "description": "Criar produto",
+                        "name": "produto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProdutoBase"
+                        }
                     },
                     {
                         "type": "file",
@@ -554,8 +585,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "produtos",
-                    "admin"
+                    "produtos"
                 ],
                 "summary": "Deleta um produto",
                 "parameters": [
@@ -602,17 +632,13 @@ const docTemplate = `{
             }
         },
         "/admin/produtos/editar": {
-            "post": {
+            "put": {
                 "description": "Editar um produto através do id informado na url e dos dados recebidos via formulário do cliente",
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "produtos",
-                    "admin"
+                    "produtos"
                 ],
                 "summary": "Editar um produto",
                 "parameters": [
@@ -624,24 +650,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "boolean",
-                        "name": "ativo",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "descricao",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "number",
-                        "name": "preco",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "quantidade",
-                        "in": "formData"
+                        "description": "Dados do produto",
+                        "name": "produto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ProdutoBase"
+                        }
                     },
                     {
                         "type": "file",
@@ -703,8 +718,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "produtos",
-                    "admin"
+                    "produtos"
                 ],
                 "summary": "Remove a imagem de um produto",
                 "parameters": [
@@ -755,6 +769,53 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/admin/produtos/todos": {
+            "get": {
+                "description": "Busca e retorna um JSON no modelo de produtos com todos os produtos não deletados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos"
+                ],
+                "summary": "Busca todos os produtos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Produto"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -773,6 +834,15 @@ const docTemplate = `{
         "models.Cliente": {
             "type": "object",
             "properties": {
+                "bairro": {
+                    "type": "string"
+                },
+                "cep": {
+                    "type": "integer"
+                },
+                "cidade": {
+                    "type": "string"
+                },
                 "cpf_cnpj": {
                     "type": "string"
                 },
@@ -789,10 +859,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "endereco": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Endereco"
-                    }
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -800,10 +867,54 @@ const docTemplate = `{
                 "nome": {
                     "type": "string"
                 },
+                "numero": {
+                    "type": "integer"
+                },
                 "telefone": {
                     "type": "string"
                 },
+                "uf": {
+                    "type": "string"
+                },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ClienteBase": {
+            "type": "object",
+            "properties": {
+                "bairro": {
+                    "type": "string"
+                },
+                "cep": {
+                    "type": "integer"
+                },
+                "cidade": {
+                    "type": "string"
+                },
+                "cpf_cnpj": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "empresa": {
+                    "type": "string"
+                },
+                "endereco": {
+                    "type": "string"
+                },
+                "nome": {
+                    "type": "string"
+                },
+                "numero": {
+                    "type": "integer"
+                },
+                "telefone": {
+                    "type": "string"
+                },
+                "uf": {
                     "type": "string"
                 }
             }
@@ -831,44 +942,6 @@ const docTemplate = `{
                 },
                 "nomeLoja": {
                     "type": "string"
-                },
-                "numero": {
-                    "type": "integer"
-                },
-                "uf": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Endereco": {
-            "type": "object",
-            "properties": {
-                "bairro": {
-                    "type": "string"
-                },
-                "cep": {
-                    "type": "integer"
-                },
-                "cidade": {
-                    "type": "string"
-                },
-                "clienteID": {
-                    "type": "integer"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "endereco": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "numero": {
                     "type": "integer"
@@ -910,6 +983,23 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ProdutoBase": {
+            "type": "object",
+            "properties": {
+                "ativo": {
+                    "type": "boolean"
+                },
+                "descricao": {
+                    "type": "string"
+                },
+                "preco": {
+                    "type": "number"
+                },
+                "quantidade": {
+                    "type": "integer"
                 }
             }
         },

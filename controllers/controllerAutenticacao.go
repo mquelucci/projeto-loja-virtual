@@ -13,7 +13,7 @@ import (
 // Autenticar godoc
 // @Summary Faz a autenticação do usuário
 // @Description Através dos dados fornecidos via formulário HTML, compara com o banco de dados para autenticar ou rejeitar
-// @Tags auth, admin
+// @Tags auth
 // @Accept mpfd
 // @Produce json
 // @Param usuario formData models.AdminBase true "Dados do usuário"
@@ -42,7 +42,7 @@ func Autenticar(c *gin.Context) {
 // FazerLogout godoc
 // @Summary Faz o logout do usuário
 // @Description Remove a autenticação da sessão do usuário atual
-// @Tags auth, admin
+// @Tags auth
 // @Produce json
 // @Success 200 {object} responses.Message
 // @Failure 500 {object} responses.Error

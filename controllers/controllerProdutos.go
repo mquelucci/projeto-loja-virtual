@@ -16,12 +16,12 @@ import (
 // BuscarTodosProdutos godoc
 // @Summary Busca todos os produtos
 // @Description Busca e retorna um JSON no modelo de produtos com todos os produtos não deletados
-// @Tags produtos, admin
+// @Tags produtos
 // @Produce json
 // @Success 200 {object} responses.Message{data=[]models.Produto}
 // @Failure 401 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos [get]
+// @Router /admin/produtos/todos [get]
 func BuscarTodosProdutos(c *gin.Context) {
 	produtos := []models.Produto{}
 	err := database.DB.Order("descricao ASC").Find(&produtos).Error
@@ -34,10 +34,10 @@ func BuscarTodosProdutos(c *gin.Context) {
 // CriarProduto godoc
 // @Summary Cria um produto
 // @Description Cria um produto através dos dados recebidos via formulário do cliente
-// @Tags produtos, admin
-// @Accept mpfd
+// @Tags produtos
+// @Accept json,multipart/form-data
 // @Produce json
-// @Param produto formData models.ProdutoBase true "Criar produto"
+// @Param produto body models.ProdutoBase true "Criar produto"
 // @Param imagem formData file false "Imagem do Produto"
 // @Success 201 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
@@ -46,16 +46,19 @@ func BuscarTodosProdutos(c *gin.Context) {
 // @Failure 500 {object} responses.Error
 // @Router /admin/produtos/criar [post]
 func CriarProduto(c *gin.Context) {
+	var produtoBase models.ProdutoBase
 	var produto models.Produto
 
-	// Tratamento da descrição
-	descricao := c.PostForm("descricao")
-	err := utils.ProdutoDuplo(descricao, false, &produto)
+	if err := c.ShouldBindJSON(&produtoBase); err != nil {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Não foi possível converter o JSON para o modelo de Produtos [" + err.Error() + "]"})
+		return
+	}
+
+	err := utils.ProdutoDuplo(produtoBase.Descricao, false, &produtoBase)
 	if err != nil {
 		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
-	produto.Descricao = descricao
 
 	// Tratamento da imagem
 	imagem, err := c.FormFile("imagem")
@@ -71,29 +74,7 @@ func CriarProduto(c *gin.Context) {
 		produto.Imagem = "/assets/images/" + imagem.Filename
 	}
 
-	// Tratamento do preço
-	preco, err := strconv.ParseFloat(c.PostForm("preco"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na conversão de preço" + err.Error()})
-		return
-	}
-	produto.Preco = preco
-
-	// Tratamento da quantidade
-	quantidade, err := strconv.Atoi(c.PostForm("quantidade"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na conversão de quantidade" + err.Error()})
-		return
-	}
-	produto.Quantidade = quantidade
-
-	// Tratamento do status ativo
-	ativo := c.PostForm("ativo")
-	if ativo == "on" {
-		produto.Ativo = true
-	} else {
-		produto.Ativo = false
-	}
+	produto.ProdutoBase = produtoBase
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do produto: " + err.Error()})
@@ -113,11 +94,10 @@ func CriarProduto(c *gin.Context) {
 // EditarProduto godoc
 // @Summary Editar um produto
 // @Description Editar um produto através do id informado na url e dos dados recebidos via formulário do cliente
-// @Tags produtos, admin
-// @Accept mpfd
+// @Tags produtos
 // @Produce json
 // @Param id query int true "Id do produto"
-// @Param produto formData models.ProdutoBase true "Dados do produto"
+// @Param produto body models.ProdutoBase true "Dados do produto"
 // @Param imagem formData file false "Imagem do Produto"
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
@@ -127,12 +107,13 @@ func CriarProduto(c *gin.Context) {
 // @Router /admin/produtos/editar [put]
 func EditarProduto(c *gin.Context) {
 	var produto models.Produto
+	var produtoBase models.ProdutoBase
 	id := c.Query("id")
-	database.DB.First(&produto, id)
+	database.DB.First(&produtoBase, id)
 
 	// Tratamento da descrição
 	descricao := c.PostForm("descricao")
-	if err := utils.ProdutoDuplo(descricao, true, &produto); err != nil {
+	if err := utils.ProdutoDuplo(descricao, true, &produtoBase); err != nil {
 		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
@@ -189,7 +170,7 @@ func EditarProduto(c *gin.Context) {
 // RemoverImagemProduto godoc
 // @Summary Remove a imagem de um produto
 // @Description Remove a imagem de um produto específico através do Id fornecido via URL
-// @Tags produtos, admin
+// @Tags produtos
 // @Produce json
 // @Param id query int true "Id do produto"
 // @Success 202 {object} responses.Message{data=models.Produto}
@@ -217,7 +198,7 @@ func RemoverImagemProduto(c *gin.Context) {
 // DeletarProduto godoc
 // @Summary Deleta um produto
 // @Description Deleta um produto específico através do Id fornecido via URL
-// @Tags produtos, admin
+// @Tags produtos
 // @Produce json
 // @Param id query int true "Id do produto"
 // @Success 202 {object} responses.Message{data=models.Produto}

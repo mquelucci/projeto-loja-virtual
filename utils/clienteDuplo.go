@@ -7,10 +7,10 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/models"
 )
 
-func ClienteDuplo(cpfCnpj string, editando bool, clienteParaCadastrar *models.Cliente) error {
+func ClienteDuplo(cpfCnpj string, editando bool, cliente *models.ClienteBase) error {
 	var clientes []models.Cliente
 
-	if editando && cpfCnpj == clienteParaCadastrar.CpfCnpj {
+	if editando && cpfCnpj == cliente.CpfCnpj {
 		return nil
 	} else {
 		err := database.DB.Where("cpf_cnpj = ?", cpfCnpj).Find(&clientes).Error
@@ -18,7 +18,7 @@ func ClienteDuplo(cpfCnpj string, editando bool, clienteParaCadastrar *models.Cl
 			return err
 		}
 		if len(clientes) > 0 {
-			return errors.New("Já existe um cliente com esse CPF/CNPJ")
+			return errors.New("Já existe um cliente com esse CPF/CNPJ " + cpfCnpj)
 		}
 		return nil
 	}

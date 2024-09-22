@@ -9,6 +9,12 @@ definitions:
     type: object
   models.Cliente:
     properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
       cpf_cnpj:
         type: string
       createdAt:
@@ -20,16 +26,43 @@ definitions:
       empresa:
         type: string
       endereco:
-        items:
-          $ref: '#/definitions/models.Endereco'
-        type: array
+        type: string
       id:
         type: integer
       nome:
         type: string
+      numero:
+        type: integer
       telefone:
         type: string
+      uf:
+        type: string
       updatedAt:
+        type: string
+    type: object
+  models.ClienteBase:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      cpf_cnpj:
+        type: string
+      email:
+        type: string
+      empresa:
+        type: string
+      endereco:
+        type: string
+      nome:
+        type: string
+      numero:
+        type: integer
+      telefone:
+        type: string
+      uf:
         type: string
     type: object
   models.Config:
@@ -48,31 +81,6 @@ definitions:
         type: integer
       nomeLoja:
         type: string
-      numero:
-        type: integer
-      uf:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  models.Endereco:
-    properties:
-      bairro:
-        type: string
-      cep:
-        type: integer
-      cidade:
-        type: string
-      clienteID:
-        type: integer
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      endereco:
-        type: string
-      id:
-        type: integer
       numero:
         type: integer
       uf:
@@ -100,6 +108,17 @@ definitions:
         type: integer
       updatedAt:
         type: string
+    type: object
+  models.ProdutoBase:
+    properties:
+      ativo:
+        type: boolean
+      descricao:
+        type: string
+      preco:
+        type: number
+      quantidade:
+        type: integer
     type: object
   responses.Error:
     properties:
@@ -146,7 +165,6 @@ paths:
       summary: Faz a autenticação do usuário
       tags:
       - auth
-      - admin
   /admin/clientes/{cpf_cnpj}:
     get:
       description: Busca o cliente da loja virtual pelo seu CPF ou CNPJ e retorna
@@ -173,52 +191,28 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Busca o cliente da loja virtual pelo seu CPF ou CNPJ
       tags:
-      - admin
       - clientes
   /admin/clientes/criar:
     post:
       description: Cria um cliente da loja virtual conforme informações enviadas pelo
         formulário
       parameters:
-      - in: formData
-        name: cpf_cnpj
-        type: string
-      - in: formData
-        name: email
-        type: string
-      - in: formData
-        name: empresa
-        type: string
-      - in: formData
-        name: nome
-        type: string
-      - in: formData
-        name: telefone
-        type: string
-      - in: formData
-        name: bairro
-        type: string
-      - in: formData
-        name: cep
-        type: integer
-      - in: formData
-        name: cidade
-        type: string
-      - in: formData
-        name: endereco
-        type: string
-      - in: formData
-        name: numero
-        type: integer
-      - in: formData
-        name: uf
-        type: string
+      - description: Dados do cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClienteBase'
       produces:
       - application/json
       responses:
@@ -239,13 +233,99 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Cria um cliente da loja virtual
       tags:
-      - admin
+      - clientes
+  /admin/clientes/deletar/{cpf_cnpj}:
+    delete:
+      description: Deleta um cliente da loja virtual conforme cpf/cnpj informadas
+        na URL
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Deletar um cliente da loja virtual (soft-delete)
+      tags:
+      - clientes
+  /admin/clientes/editar/{cpf_cnpj}:
+    put:
+      description: Edita um cliente da loja virtual conforme o JSON e cpf_cnpj informados
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      - description: Dados do cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClienteBase'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Edita um cliente da loja virtual
+      tags:
       - clientes
   /admin/clientes/todos:
     get:
@@ -270,7 +350,6 @@ paths:
             $ref: '#/definitions/responses.Error'
       summary: Busca todos os clientes da loja virtual
       tags:
-      - admin
       - clientes
   /admin/configuracoes:
     get:
@@ -359,55 +438,16 @@ paths:
       summary: Faz o logout do usuário
       tags:
       - auth
-      - admin
-  /admin/produtos:
-    get:
-      description: Busca e retorna um JSON no modelo de produtos com todos os produtos
-        não deletados
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/responses.Message'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.Produto'
-                  type: array
-              type: object
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responses.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/responses.Error'
-      summary: Busca todos os produtos
-      tags:
-      - produtos
-      - admin
   /admin/produtos/criar:
     post:
-      consumes:
-      - multipart/form-data
       description: Cria um produto através dos dados recebidos via formulário do cliente
       parameters:
-      - in: formData
-        name: ativo
-        type: boolean
-      - in: formData
-        name: descricao
-        type: string
-      - in: formData
-        name: preco
-        type: number
-      - in: formData
-        name: quantidade
-        type: integer
+      - description: Criar produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProdutoBase'
       - description: Imagem do Produto
         in: formData
         name: imagem
@@ -443,7 +483,6 @@ paths:
       summary: Cria um produto
       tags:
       - produtos
-      - admin
   /admin/produtos/deletar:
     delete:
       description: Deleta um produto específico através do Id fornecido via URL
@@ -476,11 +515,8 @@ paths:
       summary: Deleta um produto
       tags:
       - produtos
-      - admin
   /admin/produtos/editar:
-    post:
-      consumes:
-      - multipart/form-data
+    put:
       description: Editar um produto através do id informado na url e dos dados recebidos
         via formulário do cliente
       parameters:
@@ -489,18 +525,12 @@ paths:
         name: id
         required: true
         type: integer
-      - in: formData
-        name: ativo
-        type: boolean
-      - in: formData
-        name: descricao
-        type: string
-      - in: formData
-        name: preco
-        type: number
-      - in: formData
-        name: quantidade
-        type: integer
+      - description: Dados do produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProdutoBase'
       - description: Imagem do Produto
         in: formData
         name: imagem
@@ -536,7 +566,6 @@ paths:
       summary: Editar um produto
       tags:
       - produtos
-      - admin
   /admin/produtos/removeImagem:
     delete:
       description: Remove a imagem de um produto específico através do Id fornecido
@@ -574,5 +603,33 @@ paths:
       summary: Remove a imagem de um produto
       tags:
       - produtos
-      - admin
+  /admin/produtos/todos:
+    get:
+      description: Busca e retorna um JSON no modelo de produtos com todos os produtos
+        não deletados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Produto'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca todos os produtos
+      tags:
+      - produtos
 swagger: "2.0"

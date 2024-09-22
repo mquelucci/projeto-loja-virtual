@@ -40,28 +40,29 @@ func HandleRequests() {
 
 	authAdminProdutos := r.Group("/admin/produtos").Use(middlewares.Auth())
 	{
-		authAdminProdutos.GET("/produtos", controllers.BuscarTodosProdutos)
-		authAdminProdutos.POST("/produtos/criar", controllers.CriarProduto)
-		authAdminProdutos.PUT("/produtos/editar", controllers.EditarProduto)
-		authAdminProdutos.DELETE("/produtos/removeImagem", controllers.RemoverImagemProduto)
-		authAdminProdutos.DELETE("/produtos/deletar", controllers.DeletarProduto)
+		authAdminProdutos.GET("/todos", controllers.BuscarTodosProdutos)
+		authAdminProdutos.POST("/criar", controllers.CriarProduto)
+		authAdminProdutos.PUT("/editar", controllers.EditarProduto)
+		authAdminProdutos.DELETE("/removeImagem", controllers.RemoverImagemProduto)
+		authAdminProdutos.DELETE("/deletar", controllers.DeletarProduto)
 	}
 
 	authAdminClientes := r.Group("/admin/clientes").Use(middlewares.Auth())
 	{
 
-		authAdminClientes.GET("/clientes/todos", controllers.BuscarTodosClientes)
-		authAdminClientes.GET("/clientes/:cpf_cnpj", controllers.BuscarCliente)
-
-		authAdminClientes.POST("/logout", controllers.FazerLogout)
-		authAdminClientes.POST("/clientes/criar", controllers.CriarCliente)
+		authAdminClientes.GET("/todos", controllers.BuscarTodosClientes)
+		authAdminClientes.GET("/:cpf_cnpj", controllers.BuscarCliente)
+		authAdminClientes.POST("/criar", controllers.CriarCliente)
+		authAdminClientes.DELETE("/deletar/:cpf_cnpj", controllers.DeletarCliente)
 
 	}
 
 	authAdmin := r.Group("/admin").Use(middlewares.Auth())
 	{
 		authAdmin.GET("/configuracoes", controllers.BuscarConfiguracoes)
-		authAdminClientes.POST("/configuracoes", controllers.AlterarConfiguracoes)
+		authAdmin.POST("/configuracoes", controllers.AlterarConfiguracoes)
+		authAdmin.POST("/logout", controllers.FazerLogout)
+
 	}
 
 	r.NoRoute(controllers.NotFound)

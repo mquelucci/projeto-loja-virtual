@@ -7,8 +7,8 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/models"
 )
 
-func ProdutoDuplo(descricao string, editando bool, produto *models.Produto) error {
-	var produtos []models.Produto
+func ProdutoDuplo(descricao string, editando bool, produto *models.ProdutoBase) error {
+	var produtos []models.ProdutoBase
 
 	if editando && descricao == produto.Descricao {
 		return nil
@@ -18,7 +18,7 @@ func ProdutoDuplo(descricao string, editando bool, produto *models.Produto) erro
 			return err
 		}
 		if len(produtos) > 0 {
-			return errors.New("Já existe um produto com essa descrição")
+			return errors.New("Já existe um produto com essa descrição " + descricao)
 		}
 		return nil
 	}
