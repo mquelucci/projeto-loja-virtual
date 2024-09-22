@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mquelucci/projeto-loja-virtual/controllers/responses"
@@ -31,14 +30,34 @@ func BuscarTodosProdutos(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.Message{Message: "Produtos encontrados", Data: produtos})
 }
 
+// BuscarProdutoPorId godoc
+// @Summary Busca um produto pelo seu ID
+// @Description Busca e retorna um JSON no modelo de produtos com o produto que possui o ID informado
+// @Tags produtos
+// @Produce json
+// @Param id path int true "ID do produto"
+// @Success 200 {object} responses.Message{data=[]models.Produto}
+// @Failure 401 {object} responses.Error
+// @Failure 404 {object} responses.Error
+// @Router /admin/produtos/{id} [get]
+func BuscarProdutoPorId(c *gin.Context) {
+	var produto models.Produto
+	id := c.Param("id")
+
+	if err := database.DB.First(&produto, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, responses.Error{Erro: "Produto não encontrado"})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.Message{Message: "Produto encontrado", Data: produto})
+}
+
 // CriarProduto godoc
 // @Summary Cria um produto
 // @Description Cria um produto através dos dados recebidos via formulário do cliente
 // @Tags produtos
-// @Accept json,multipart/form-data
 // @Produce json
 // @Param produto body models.ProdutoBase true "Criar produto"
-// @Param imagem formData file false "Imagem do Produto"
 // @Success 201 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
@@ -60,20 +79,7 @@ func CriarProduto(c *gin.Context) {
 		return
 	}
 
-	// Tratamento da imagem
-	imagem, err := c.FormFile("imagem")
-	if err != nil {
-		log.Println("Nenhum arquivo carregado. Criando produto sem imagem.")
-		produto.Imagem = "/assets/images/not_found.png"
-	} else {
-		err := utils.TratarImagemProduto(c, imagem, &produto)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro no tratamento de imagem do produto" + err.Error()})
-			return
-		}
-		produto.Imagem = "/assets/images/" + imagem.Filename
-	}
-
+	produto.Imagem = "/assets/images/not_found.png"
 	produto.ProdutoBase = produtoBase
 
 	if err := models.ValidaProduto(&produto); err != nil {
@@ -98,7 +104,6 @@ func CriarProduto(c *gin.Context) {
 // @Produce json
 // @Param id query int true "Id do produto"
 // @Param produto body models.ProdutoBase true "Dados do produto"
-// @Param imagem formData file false "Imagem do Produto"
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
@@ -109,51 +114,21 @@ func EditarProduto(c *gin.Context) {
 	var produto models.Produto
 	var produtoBase models.ProdutoBase
 	id := c.Query("id")
-	database.DB.First(&produtoBase, id)
+	database.DB.First(&produto, id)
 
-	// Tratamento da descrição
-	descricao := c.PostForm("descricao")
-	if err := utils.ProdutoDuplo(descricao, true, &produtoBase); err != nil {
+	if err := c.ShouldBindJSON(&produtoBase); err != nil {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Não foi possível converter o JSON para o modelo de Produtos [" + err.Error() + "]"})
+		return
+	}
+
+	err := utils.ProdutoDuplo(produtoBase.Descricao, false, &produtoBase)
+	if err != nil {
 		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
 	}
-	produto.Descricao = descricao
 
-	// Tratamento da imagem
-	imagem, err := c.FormFile("imagem")
-	if err != nil {
-		log.Println("Nenhum arquivo carregado. Mantendo o registro de imagem do produto.")
-	} else {
-		if err := utils.TratarImagemProduto(c, imagem, &produto); err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro no tratamento de imagem do produto" + err.Error()})
-			return
-		}
-		produto.Imagem = "/assets/images/" + imagem.Filename
-	}
-
-	// Tratamento do preço
-	preco, err := strconv.ParseFloat(c.PostForm("preco"), 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na conversão de preço" + err.Error()})
-		return
-	}
-	produto.Preco = preco
-
-	// Tratamento da quantidade
-	quantidade, err := strconv.Atoi(c.PostForm("quantidade"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na conversão de quantidade" + err.Error()})
-		return
-	}
-	produto.Quantidade = quantidade
-
-	// Tratamento do status ativo
-	ativo := c.PostForm("ativo")
-	if ativo == "on" {
-		produto.Ativo = true
-	} else {
-		produto.Ativo = false
-	}
+	produto.Imagem = "/assets/images/not_found.png"
+	produto.ProdutoBase = produtoBase
 
 	if err := models.ValidaProduto(&produto); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do produto: " + err.Error()})
@@ -167,19 +142,56 @@ func EditarProduto(c *gin.Context) {
 	c.JSON(http.StatusAccepted, responses.Message{Message: "Produto editado com sucesso", Data: produto})
 }
 
+// AdicionarImagemProduto godoc
+// @Summary Adiciona a imagem de um produto
+// @Description Adiciona a imagem de um produto através do id informado na url e da imagem enviada via formulário
+// @Tags produtos
+// @Produce json
+// @Param id path int true "Id do produto"
+// @Param imagem formData file false "Imagem do Produto"
+// @Success 202 {object} responses.Message{data=models.Produto}
+// @Failure 401 {object} responses.Error
+// @Failure 500 {object} responses.Error
+// @Router /admin/produtos/adicionaImagem/{id} [put]
+func AdicionarImagemProduto(c *gin.Context) {
+	var produto models.Produto
+	id := c.Param("id")
+	database.DB.First(&produto, id)
+
+	// Tratamento da imagem
+	imagem, err := c.FormFile("imagem")
+	if err != nil {
+		log.Println("Nenhum arquivo carregado. Mantendo o registro de imagem do produto.")
+	} else {
+		if err := utils.TratarImagemProduto(c, imagem, &produto); err != nil {
+			c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro no tratamento de imagem do produto" + err.Error()})
+			return
+		}
+		produto.Imagem = "/assets/images/" + imagem.Filename
+	}
+
+	if err = database.DB.Save(&produto).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, responses.Error{
+			Erro: "Erro ao tentar salvar a imagem do produto no banco de dados: [" + err.Error() + "]",
+		})
+	}
+
+	c.JSON(http.StatusAccepted, responses.Message{Message: "Imagem adicionada com sucesso", Data: produto})
+}
+
 // RemoverImagemProduto godoc
 // @Summary Remove a imagem de um produto
 // @Description Remove a imagem de um produto específico através do Id fornecido via URL
 // @Tags produtos
 // @Produce json
-// @Param id query int true "Id do produto"
+// @Param id path int true "Id do produto"
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos/removeImagem [delete]
+// @Router /admin/produtos/removeImagem/{id} [delete]
 func RemoverImagemProduto(c *gin.Context) {
-	id := c.Query("id")
+	id := c.Param("id")
 	var produto models.Produto
 	database.DB.First(&produto, id)
 	if produto.Imagem != "/assets/images/not_found.png" {

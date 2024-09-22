@@ -41,9 +41,11 @@ func HandleRequests() {
 	authAdminProdutos := r.Group("/admin/produtos").Use(middlewares.Auth())
 	{
 		authAdminProdutos.GET("/todos", controllers.BuscarTodosProdutos)
+		authAdminProdutos.GET("/:id", controllers.BuscarProdutoPorId)
 		authAdminProdutos.POST("/criar", controllers.CriarProduto)
 		authAdminProdutos.PUT("/editar", controllers.EditarProduto)
-		authAdminProdutos.DELETE("/removeImagem", controllers.RemoverImagemProduto)
+		authAdminProdutos.PUT("/adicionaImagem/:id", controllers.AdicionarImagemProduto)
+		authAdminProdutos.DELETE("/removeImagem/:id", controllers.RemoverImagemProduto)
 		authAdminProdutos.DELETE("/deletar", controllers.DeletarProduto)
 	}
 

@@ -505,6 +505,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/produtos/adicionaImagem/{id}": {
+            "put": {
+                "description": "Adiciona a imagem de um produto através do id informado na url e da imagem enviada via formulário",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos"
+                ],
+                "summary": "Adiciona a imagem de um produto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Id do produto",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Imagem do Produto",
+                        "name": "imagem",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/models.Produto"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/produtos/criar": {
             "post": {
                 "description": "Cria um produto através dos dados recebidos via formulário do cliente",
@@ -524,12 +583,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.ProdutoBase"
                         }
-                    },
-                    {
-                        "type": "file",
-                        "description": "Imagem do Produto",
-                        "name": "imagem",
-                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -657,12 +710,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.ProdutoBase"
                         }
-                    },
-                    {
-                        "type": "file",
-                        "description": "Imagem do Produto",
-                        "name": "imagem",
-                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -711,7 +758,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/produtos/removeImagem": {
+        "/admin/produtos/removeImagem/{id}": {
             "delete": {
                 "description": "Remove a imagem de um produto específico através do Id fornecido via URL",
                 "produces": [
@@ -726,7 +773,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id do produto",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     }
                 ],
@@ -810,6 +857,62 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/produtos/{id}": {
+            "get": {
+                "description": "Busca e retorna um JSON no modelo de produtos com o produto que possui o ID informado",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "produtos"
+                ],
+                "summary": "Busca um produto pelo seu ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID do produto",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/responses.Message"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.Produto"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/responses.Error"
                         }

@@ -8,7 +8,7 @@ import (
 )
 
 func ProdutoDuplo(descricao string, editando bool, produto *models.ProdutoBase) error {
-	var produtos []models.ProdutoBase
+	var produtos []models.Produto
 
 	if editando && descricao == produto.Descricao {
 		return nil

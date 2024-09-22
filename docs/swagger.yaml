@@ -438,6 +438,78 @@ paths:
       summary: Faz o logout do usuário
       tags:
       - auth
+  /admin/produtos/{id}:
+    get:
+      description: Busca e retorna um JSON no modelo de produtos com o produto que
+        possui o ID informado
+      parameters:
+      - description: ID do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Produto'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca um produto pelo seu ID
+      tags:
+      - produtos
+  /admin/produtos/adicionaImagem/{id}:
+    put:
+      description: Adiciona a imagem de um produto através do id informado na url
+        e da imagem enviada via formulário
+      parameters:
+      - description: Id do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Imagem do Produto
+        in: formData
+        name: imagem
+        type: file
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Adiciona a imagem de um produto
+      tags:
+      - produtos
   /admin/produtos/criar:
     post:
       description: Cria um produto através dos dados recebidos via formulário do cliente
@@ -448,10 +520,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.ProdutoBase'
-      - description: Imagem do Produto
-        in: formData
-        name: imagem
-        type: file
       produces:
       - application/json
       responses:
@@ -531,10 +599,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.ProdutoBase'
-      - description: Imagem do Produto
-        in: formData
-        name: imagem
-        type: file
       produces:
       - application/json
       responses:
@@ -566,13 +630,13 @@ paths:
       summary: Editar um produto
       tags:
       - produtos
-  /admin/produtos/removeImagem:
+  /admin/produtos/removeImagem/{id}:
     delete:
       description: Remove a imagem de um produto específico através do Id fornecido
         via URL
       parameters:
       - description: Id do produto
-        in: query
+        in: path
         name: id
         required: true
         type: integer
