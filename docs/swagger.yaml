@@ -90,6 +90,21 @@ definitions:
     type: object
   models.ItensVenda:
     properties:
+      itemID:
+        type: integer
+      preco:
+        type: number
+      produto:
+        $ref: '#/definitions/models.Produto'
+      produto_id:
+        type: integer
+      quantidade:
+        type: integer
+      vendaID:
+        type: integer
+    type: object
+  models.ItensVendaBase:
+    properties:
       preco:
         type: number
       produto_id:
@@ -131,11 +146,32 @@ definitions:
     type: object
   models.Venda:
     properties:
+      cliente:
+        $ref: '#/definitions/models.Cliente'
       cliente_id:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
         type: integer
       itens_venda:
         items:
           $ref: '#/definitions/models.ItensVenda'
+        type: array
+      updatedAt:
+        type: string
+      valorTotal:
+        type: number
+    type: object
+  models.VendaBase:
+    properties:
+      cliente_id:
+        type: integer
+      itens_venda:
+        items:
+          $ref: '#/definitions/models.ItensVendaBase'
         type: array
     type: object
   responses.Error:
@@ -725,7 +761,7 @@ paths:
         name: venda
         required: true
         schema:
-          $ref: '#/definitions/models.Venda'
+          $ref: '#/definitions/models.VendaBase'
       produces:
       - application/json
       responses:

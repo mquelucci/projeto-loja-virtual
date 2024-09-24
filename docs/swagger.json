@@ -929,7 +929,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Venda"
+                            "$ref": "#/definitions/models.VendaBase"
                         }
                     }
                 ],
@@ -1089,6 +1089,29 @@
         "models.ItensVenda": {
             "type": "object",
             "properties": {
+                "itemID": {
+                    "type": "integer"
+                },
+                "preco": {
+                    "type": "number"
+                },
+                "produto": {
+                    "$ref": "#/definitions/models.Produto"
+                },
+                "produto_id": {
+                    "type": "integer"
+                },
+                "quantidade": {
+                    "type": "integer"
+                },
+                "vendaID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ItensVendaBase": {
+            "type": "object",
+            "properties": {
                 "preco": {
                     "type": "number"
                 },
@@ -1152,13 +1175,45 @@
         "models.Venda": {
             "type": "object",
             "properties": {
+                "cliente": {
+                    "$ref": "#/definitions/models.Cliente"
+                },
                 "cliente_id": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "itens_venda": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ItensVenda"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "valorTotal": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.VendaBase": {
+            "type": "object",
+            "properties": {
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "itens_venda": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ItensVendaBase"
                     }
                 }
             }
