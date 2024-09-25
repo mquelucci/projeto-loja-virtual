@@ -42,5 +42,5 @@ func ConectaBanco() {
 		panic("Nenhum tipo de banco de dados informado no arquivo config.env")
 	}
 	// Mantém a estrutura do banco de dados sempre atualizadas
-	DB.AutoMigrate(models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{}, models.Venda{}, models.ItensVenda{})
+	DB.AutoMigrate(models.Migration{}, models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{}, models.Venda{}, models.ItensVenda{})
 }

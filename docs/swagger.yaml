@@ -39,6 +39,10 @@ definitions:
         type: string
       updatedAt:
         type: string
+      vendas:
+        items:
+          $ref: '#/definitions/models.Venda'
+        type: array
     type: object
   models.ClienteBase:
     properties:
@@ -90,26 +94,25 @@ definitions:
     type: object
   models.ItensVenda:
     properties:
-      itemID:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
         type: integer
       preco:
         type: number
       produto:
         $ref: '#/definitions/models.Produto'
-      produto_id:
+      produtoID:
         type: integer
       quantidade:
         type: integer
+      updatedAt:
+        type: string
+      venda:
+        $ref: '#/definitions/models.Venda'
       vendaID:
-        type: integer
-    type: object
-  models.ItensVendaBase:
-    properties:
-      preco:
-        type: number
-      produto_id:
-        type: integer
-      quantidade:
         type: integer
     type: object
   models.Produto:
@@ -132,6 +135,10 @@ definitions:
         type: integer
       updatedAt:
         type: string
+      vendas:
+        items:
+          $ref: '#/definitions/models.ItensVenda'
+        type: array
     type: object
   models.ProdutoBase:
     properties:
@@ -148,15 +155,17 @@ definitions:
     properties:
       cliente:
         $ref: '#/definitions/models.Cliente'
-      cliente_id:
+      clienteID:
         type: integer
       createdAt:
+        type: string
+      data:
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: integer
-      itens_venda:
+      itens:
         items:
           $ref: '#/definitions/models.ItensVenda'
         type: array
@@ -165,13 +174,20 @@ definitions:
       valorTotal:
         type: number
     type: object
-  models.VendaBase:
+  models.VendaRequest:
     properties:
       cliente_id:
         type: integer
-      itens_venda:
+      itens:
         items:
-          $ref: '#/definitions/models.ItensVendaBase'
+          properties:
+            preco:
+              type: number
+            produto_id:
+              type: integer
+            quantidade:
+              type: integer
+          type: object
         type: array
     type: object
   responses.Error:
@@ -750,6 +766,33 @@ paths:
       summary: Busca todos os produtos
       tags:
       - produtos
+  /admin/vendas/buscar/{id}:
+    get:
+      description: Busca uma venda por Id
+      parameters:
+      - description: ID da venda
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Venda'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca uma venda por Id
+      tags:
+      - vendas
   /admin/vendas/criar:
     post:
       consumes:
@@ -761,7 +804,7 @@ paths:
         name: venda
         required: true
         schema:
-          $ref: '#/definitions/models.VendaBase'
+          $ref: '#/definitions/models.VendaRequest'
       produces:
       - application/json
       responses:
@@ -771,6 +814,18 @@ paths:
             $ref: '#/definitions/models.Venda'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Criar uma venda

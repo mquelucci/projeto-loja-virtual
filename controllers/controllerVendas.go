@@ -8,7 +8,22 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/controllers/responses"
 	"github.com/mquelucci/projeto-loja-virtual/database"
 	"github.com/mquelucci/projeto-loja-virtual/models"
+	"gorm.io/gorm"
 )
+
+type ItensVendaQuery struct {
+	ProdutoID  uint `gorm:"foreignKey:ProdutoID"`
+	Quantidade int
+	Preco      float64
+}
+
+type VendasQuery struct {
+	gorm.Model
+	ClienteID  uint `gorm:"foreignKey:ClienteID"`
+	Cliente    models.Cliente
+	ValorTotal float64
+	Itens      []ItensVendaQuery `gorm:"foreignKey:VendaID"`
+}
 
 // CriarVenda godoc
 //
@@ -17,74 +32,101 @@ import (
 // @Tags		vendas
 // @Accept		json
 // @Produce		json
-// @Param		venda	body	models.VendaBase	true	"Dados da venda"
+// @Param		venda	body	models.VendaRequest	true	"Dados da venda"
 // @Success		201	{object}	models.Venda
 // @Failure		401	{object}	responses.Error
+// @Failure		404	{object}	responses.Error
+// @Failure		422	{object}	responses.Error
+// @Failure		500	{object}	responses.Error
 // @Router		/admin/vendas/criar [post]
 func CriarVenda(c *gin.Context) {
-	var venda models.Venda
-	type listaDeProdutos struct {
-		produtoId       int
-		indexItensVenda int
-		quantidade      int
-	}
-	var sliceListaDeProdutos []listaDeProdutos
+	var vendaJson models.VendaRequest
 
-	c.ShouldBindJSON(&venda)
-
-	for index, item := range venda.ItensVenda {
-
-		if item.Quantidade <= 0 {
-			c.JSON(http.StatusBadRequest, responses.Error{Erro: "Quantidade do item nr. " + strconv.Itoa(index+1) + " não pode ser zero!"})
-			return
-		}
-
-		venda.ValorTotal += item.Preco
-
-		// Verifica se o produto informado na lista de itens vindos da requisição já havia sido informado antes
-		// Se não, registra que ele apareceu e a quantidade informada
-		// Se já, soma a quantidade informada a quantidade anterior
-		for index, itemDaLista := range sliceListaDeProdutos {
-			if itemDaLista.produtoId == item.ProdutoID {
-				sliceListaDeProdutos[index].quantidade += item.Quantidade
-				break
-			} else {
-				sliceListaDeProdutos = append(sliceListaDeProdutos, listaDeProdutos{item.ProdutoID, index, item.Quantidade})
-				break
-			}
-		}
-
-	}
-
-	for _, itemDaLista := range sliceListaDeProdutos {
-
-		if err := database.DB.First(&venda.ItensVenda[itemDaLista.indexItensVenda].Produto, itemDaLista.produtoId).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
-			return
-		}
-
-		if venda.ItensVenda[itemDaLista.indexItensVenda].Produto.Quantidade < itemDaLista.quantidade {
-			c.JSON(http.StatusBadRequest, responses.Error{Erro: "Quantidade insuficiente no estoque do produto " + venda.ItensVenda[itemDaLista.indexItensVenda].Produto.Descricao + " - ID: " + strconv.FormatUint(uint64(venda.ItensVenda[itemDaLista.indexItensVenda].Produto.ID), 10)})
-			return
-		}
-
-		venda.ItensVenda[itemDaLista.indexItensVenda].Produto.Quantidade -= itemDaLista.quantidade
-
-		if err := database.DB.Save(&venda.ItensVenda[itemDaLista.indexItensVenda].Produto).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
-			return
-		}
-	}
-
-	if err := database.DB.First(&venda.Cliente, venda.ClienteID).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, responses.Error{Erro: err.Error()})
+	if err := c.ShouldBindJSON(&vendaJson); err != nil {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro ao interpretar o JSON - [" + err.Error() + "]"})
 		return
 	}
 
-	if err := database.DB.Create(&venda).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro na criação da venda: " + err.Error()})
+	//Agrupar produtos iguais e somar as quantidades
+	produtoQuantidades := make(map[uint]int)
+	for _, item := range vendaJson.Itens {
+		produtoQuantidades[item.ProdutoID] += item.Quantidade
+	}
+
+	// Início de transação para garantir a consistência dos dados
+	tx := database.DB.Begin()
+
+	// Verificar a disponibilidade de estoque para cada produto
+	for produtoID, quantidadeSolicitada := range produtoQuantidades {
+		var produto models.Produto
+		if err := tx.Where("id =?", produtoID).First(&produto).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusNotFound, responses.Error{Erro: "Erro ao buscar o produto com ID" + strconv.FormatUint(uint64(produtoID), 10) + "[" + err.Error() + "]"})
+			return
+		}
+
+		if produto.Quantidade < quantidadeSolicitada {
+			tx.Rollback()
+			c.JSON(http.StatusUnprocessableEntity, responses.Error{Erro: "Quantidade insuficiente em estoque para o produto ID " + strconv.FormatUint(uint64(produtoID), 10)})
+			return
+		}
+
+		// Atualizar a quantidade em estoque
+		produto.Quantidade -= quantidadeSolicitada
+		if err := tx.Save(&produto).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro ao tentar atualizar a quantidade em estoque do produto ID " + strconv.FormatUint(uint64(produtoID), 10) + "[" + err.Error() + "]"})
+			return
+		}
+	}
+
+	// Criar a venda
+	venda := models.Venda{
+		ClienteID: vendaJson.ClienteID,
+	}
+
+	// Inserir os itens na venda
+	vendaItens := make([]models.ItensVenda, len(vendaJson.Itens))
+	for i, item := range vendaJson.Itens {
+		vendaItens[i] = models.ItensVenda{
+			ProdutoID:  item.ProdutoID,
+			Quantidade: item.Quantidade,
+			Preco:      item.Preco,
+		}
+	}
+	venda.Itens = vendaItens
+
+	if err := tx.Create(&venda).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, responses.Error{Erro: "Erro ao tentar salvar a venda [" + err.Error() + "]"})
 		return
 	}
+
+	// Confirmar a transação
+	tx.Commit()
 
 	c.JSON(http.StatusCreated, responses.Message{Message: "Venda criada com sucesso", Data: venda})
+}
+
+// BuscarVendaPorId godoc
+//
+// @Summary		Busca uma venda por Id
+// @Description	Busca uma venda por Id
+// @Tags		vendas
+// @Produce		json
+// @Param		id	path	int	true	"ID da venda"
+// @Success		200	{object}	models.Venda
+// @Failure		401	{object}	responses.Error
+// @Failure		404	{object}	responses.Error
+// @Router		/admin/vendas/buscar/{id} [get]
+func BuscarVendaPorId(c *gin.Context) {
+	var venda VendasQuery
+	id := c.Param("id")
+
+	if err := database.DB.Preload("Itens").Preload("Cliente").First(&VendasQuery{}, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, responses.Error{Erro: "Venda não encontrada"})
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.Message{Message: "Venda encontrada", Data: venda})
 }

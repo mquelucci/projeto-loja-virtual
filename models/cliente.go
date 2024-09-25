@@ -22,6 +22,7 @@ type ClienteBase struct {
 type Cliente struct {
 	gorm.Model
 	ClienteBase
+	Vendas []Venda `gorm:"foreignKey:ClienteID"`
 }
 
 func ValidaCliente(clienteBase *ClienteBase) error {

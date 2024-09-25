@@ -62,6 +62,7 @@ func HandleRequests() {
 	authAdminVendas := r.Group("/admin/vendas").Use(middlewares.Auth())
 	{
 		authAdminVendas.POST("/criar", controllers.CriarVenda)
+		authAdminVendas.GET("/buscar/:id", controllers.BuscarVendaPorId)
 	}
 
 	authAdmin := r.Group("/admin").Use(middlewares.Auth())

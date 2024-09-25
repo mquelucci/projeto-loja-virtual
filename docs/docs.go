@@ -920,6 +920,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/vendas/buscar/{id}": {
+            "get": {
+                "description": "Busca uma venda por Id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vendas"
+                ],
+                "summary": "Busca uma venda por Id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID da venda",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Venda"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/vendas/criar": {
             "post": {
                 "description": "Criar uma venda",
@@ -940,7 +981,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.VendaBase"
+                            "$ref": "#/definitions/models.VendaRequest"
                         }
                     }
                 ],
@@ -953,6 +994,24 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/responses.Error"
                         }
@@ -1021,6 +1080,12 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "vendas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Venda"
+                    }
                 }
             }
         },
@@ -1100,7 +1165,13 @@ const docTemplate = `{
         "models.ItensVenda": {
             "type": "object",
             "properties": {
-                "itemID": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "preco": {
@@ -1109,27 +1180,19 @@ const docTemplate = `{
                 "produto": {
                     "$ref": "#/definitions/models.Produto"
                 },
-                "produto_id": {
+                "produtoID": {
                     "type": "integer"
                 },
                 "quantidade": {
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "venda": {
+                    "$ref": "#/definitions/models.Venda"
                 },
                 "vendaID": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.ItensVendaBase": {
-            "type": "object",
-            "properties": {
-                "preco": {
-                    "type": "number"
-                },
-                "produto_id": {
-                    "type": "integer"
-                },
-                "quantidade": {
                     "type": "integer"
                 }
             }
@@ -1163,6 +1226,12 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "vendas": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ItensVenda"
+                    }
                 }
             }
         },
@@ -1189,10 +1258,13 @@ const docTemplate = `{
                 "cliente": {
                     "$ref": "#/definitions/models.Cliente"
                 },
-                "cliente_id": {
+                "clienteID": {
                     "type": "integer"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "data": {
                     "type": "string"
                 },
                 "deletedAt": {
@@ -1201,7 +1273,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "itens_venda": {
+                "itens": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.ItensVenda"
@@ -1215,16 +1287,27 @@ const docTemplate = `{
                 }
             }
         },
-        "models.VendaBase": {
+        "models.VendaRequest": {
             "type": "object",
             "properties": {
                 "cliente_id": {
                     "type": "integer"
                 },
-                "itens_venda": {
+                "itens": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.ItensVendaBase"
+                        "type": "object",
+                        "properties": {
+                            "preco": {
+                                "type": "number"
+                            },
+                            "produto_id": {
+                                "type": "integer"
+                            },
+                            "quantidade": {
+                                "type": "integer"
+                            }
+                        }
                     }
                 }
             }

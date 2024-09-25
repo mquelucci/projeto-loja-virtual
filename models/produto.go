@@ -15,7 +15,8 @@ type ProdutoBase struct {
 type Produto struct {
 	gorm.Model
 	ProdutoBase
-	Imagem string `json:"imagem"`
+	Imagem string       `json:"imagem"`
+	Vendas []ItensVenda `gorm:"foreignKey:ProdutoID"`
 }
 
 func ValidaProduto(produto *Produto) error {

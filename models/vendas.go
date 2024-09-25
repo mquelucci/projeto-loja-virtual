@@ -1,16 +1,22 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
-type VendaBase struct {
-	ClienteID      int              `json:"cliente_id"`
-	ItensVendaBase []ItensVendaBase `json:"itens_venda"`
+type VendaRequest struct {
+	ClienteID uint `json:"cliente_id"`
+	Itens     []struct {
+		ProdutoID  uint    `json:"produto_id"`
+		Quantidade int     `json:"quantidade"`
+		Preco      float64 `json:"preco"`
+	} `json:"itens"`
 }
 
 type Venda struct {
 	gorm.Model
-	ClienteID  int          `json:"cliente_id" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
-	Cliente    Cliente      `gorm:"not null"`
+	ClienteID  uint
+	Cliente    Cliente      `gorm:"foreignKey:ClienteID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 	ValorTotal float64      `gorm:"not null"`
-	ItensVenda []ItensVenda `json:"itens_venda" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
+	Itens      []ItensVenda `gorm:"foreignKey:VendaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 }
