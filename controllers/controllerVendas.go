@@ -11,18 +11,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type ItensVendaQuery struct {
-	ProdutoID  uint `gorm:"foreignKey:ProdutoID"`
-	Quantidade int
-	Preco      float64
-}
-
 type VendasQuery struct {
 	gorm.Model
-	ClienteID  uint `gorm:"foreignKey:ClienteID"`
-	Cliente    models.Cliente
+	ClienteID  uint
 	ValorTotal float64
-	Itens      []ItensVendaQuery `gorm:"foreignKey:VendaID"`
+	ItensVenda []struct {
+		ProdutoID  uint
+		Quantidade int
+		Preco      float64
+	}
 }
 
 // CriarVenda godoc
@@ -120,13 +117,32 @@ func CriarVenda(c *gin.Context) {
 // @Failure		404	{object}	responses.Error
 // @Router		/admin/vendas/buscar/{id} [get]
 func BuscarVendaPorId(c *gin.Context) {
-	var venda VendasQuery
+	var venda models.Venda
+	var vendaQuery VendasQuery
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Itens").Preload("Cliente").First(&VendasQuery{}, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, responses.Error{Erro: "Venda não encontrada"})
+	if err := database.DB.Debug().Preload("Itens").First(&venda, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, responses.Error{Erro: "Venda não encontrada [" + err.Error() + "]"})
 		return
 	}
 
-	c.JSON(http.StatusOK, responses.Message{Message: "Venda encontrada", Data: venda})
+	vendaQuery.ID = venda.ID
+	vendaQuery.CreatedAt = venda.CreatedAt
+	vendaQuery.UpdatedAt = venda.UpdatedAt
+	vendaQuery.DeletedAt = venda.DeletedAt
+	vendaQuery.ClienteID = venda.ClienteID
+	vendaQuery.ValorTotal = venda.ValorTotal
+	for _, item := range venda.Itens {
+		vendaQuery.ItensVenda = append(vendaQuery.ItensVenda, struct {
+			ProdutoID  uint
+			Quantidade int
+			Preco      float64
+		}{
+			item.ProdutoID,
+			item.Quantidade,
+			item.Preco,
+		})
+	}
+
+	c.JSON(http.StatusOK, responses.Message{Message: "Venda encontrada", Data: vendaQuery})
 }

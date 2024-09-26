@@ -1264,9 +1264,6 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
-                "data": {
-                    "type": "string"
-                },
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
