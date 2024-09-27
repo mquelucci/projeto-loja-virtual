@@ -17,8 +17,8 @@ type ConfigBase struct {
 }
 
 type Config struct {
-	ID        uint `gorm:"primary_key"`
-	CreatedAt time.Time
+	ID        uint      `json:"-" gorm:"primary_key"`
+	CreatedAt time.Time `json:"-"`
 	UpdatedAt time.Time
 	ConfigBase
 }
