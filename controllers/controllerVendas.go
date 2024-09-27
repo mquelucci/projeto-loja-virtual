@@ -90,6 +90,7 @@ func CriarVenda(c *gin.Context) {
 			Quantidade: item.Quantidade,
 			Preco:      item.Preco,
 		}
+		venda.ValorTotal += (item.Preco * float64(item.Quantidade))
 	}
 	venda.Itens = vendaItens
 
@@ -102,7 +103,7 @@ func CriarVenda(c *gin.Context) {
 	// Confirmar a transação
 	tx.Commit()
 
-	c.JSON(http.StatusCreated, responses.Message{Message: "Venda criada com sucesso", Data: venda})
+	c.JSON(http.StatusCreated, responses.Message{Message: "Venda criada com sucesso", Data: vendaJson})
 }
 
 // BuscarVendaPorId godoc
