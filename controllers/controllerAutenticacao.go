@@ -14,18 +14,17 @@ import (
 // @Summary Faz a autenticação do usuário
 // @Description Através dos dados fornecidos via formulário HTML, compara com o banco de dados para autenticar ou rejeitar
 // @Tags auth
-// @Accept mpfd
 // @Produce json
-// @Param usuario formData models.AdminBase true "Dados do usuário"
+// @Param usuario body models.AdminBase true "Dados do usuário"
 // @Success 200 {object} responses.Message
 // @Failure 401 {object} responses.Error
 // @Failure 500 {object} responses.Error
 // @Router /admin/autenticar [post]
 func Autenticar(c *gin.Context) {
-	usuario := c.PostForm("nome")
-	senha := c.PostForm("senha")
+	adminJson := models.AdminBase{}
+	c.ShouldBindJSON(&adminJson)
 	var admin models.Admin
-	if err := database.DB.Where("nome = ? AND senha = ?", usuario, senha).First(&admin).Error; err != nil {
+	if err := database.DB.Where("nome = ? AND senha = ?", adminJson.Nome, adminJson.Senha).First(&admin).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, responses.Error{Erro: err.Error()})
 		return
 	}
