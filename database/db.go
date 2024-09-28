@@ -41,6 +41,10 @@ func ConectaBanco() {
 	default:
 		panic("Nenhum tipo de banco de dados informado no arquivo config.env")
 	}
+	sqlDB, _ := DB.DB()
+
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(15)
 	// Mantém a estrutura do banco de dados sempre atualizadas
 	DB.AutoMigrate(models.Migration{}, models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{}, models.Venda{}, models.ItensVenda{})
 }
