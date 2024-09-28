@@ -18,9 +18,6 @@ const docTemplate = `{
         "/admin/autenticar": {
             "post": {
                 "description": "Através dos dados fornecidos via formulário HTML, compara com o banco de dados para autenticar ou rejeitar",
-                "consumes": [
-                    "multipart/form-data"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -30,14 +27,13 @@ const docTemplate = `{
                 "summary": "Faz a autenticação do usuário",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "nome",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "senha",
-                        "in": "formData"
+                        "description": "Dados do usuário",
+                        "name": "usuario",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AdminBase"
+                        }
                     }
                 ],
                 "responses": {
@@ -410,39 +406,13 @@ const docTemplate = `{
                 "summary": "Altera as configurações da loja virtual",
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "bairro",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "cep",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "cidade",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "endereco",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "nomeLoja",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "numero",
-                        "in": "formData"
-                    },
-                    {
-                        "type": "string",
-                        "name": "uf",
-                        "in": "formData"
+                        "description": "Dados da loja virtual",
+                        "name": "configuracoes",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ConfigBase"
+                        }
                     }
                 ],
                 "responses": {
@@ -472,6 +442,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responses.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/responses.Error"
                         }
@@ -1033,6 +1009,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.AdminBase": {
+            "type": "object",
+            "properties": {
+                "nome": {
+                    "type": "string"
+                },
+                "senha": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Cliente": {
             "type": "object",
             "properties": {
@@ -1080,12 +1067,6 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "vendas": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Venda"
-                    }
                 }
             }
         },
@@ -1139,14 +1120,8 @@ const docTemplate = `{
                 "cidade": {
                     "type": "string"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
                 "endereco": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "nomeLoja": {
                     "type": "string"
@@ -1156,8 +1131,31 @@ const docTemplate = `{
                 },
                 "uf": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ConfigBase": {
+            "type": "object",
+            "properties": {
+                "bairro": {
+                    "type": "string"
                 },
-                "updatedAt": {
+                "cep": {
+                    "type": "integer"
+                },
+                "cidade": {
+                    "type": "string"
+                },
+                "endereco": {
+                    "type": "string"
+                },
+                "nomeLoja": {
+                    "type": "string"
+                },
+                "numero": {
+                    "type": "integer"
+                },
+                "uf": {
                     "type": "string"
                 }
             }
@@ -1219,19 +1217,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "preco": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "quantidade": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "updatedAt": {
                     "type": "string"
-                },
-                "vendas": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.ItensVenda"
-                    }
                 }
             }
         },
@@ -1245,10 +1239,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "preco": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 0
                 },
                 "quantidade": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         },

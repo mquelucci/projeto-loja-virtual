@@ -7,6 +7,13 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.AdminBase:
+    properties:
+      nome:
+        type: string
+      senha:
+        type: string
+    type: object
   models.Cliente:
     properties:
       bairro:
@@ -39,10 +46,6 @@ definitions:
         type: string
       updatedAt:
         type: string
-      vendas:
-        items:
-          $ref: '#/definitions/models.Venda'
-        type: array
     type: object
   models.ClienteBase:
     properties:
@@ -77,19 +80,30 @@ definitions:
         type: integer
       cidade:
         type: string
-      createdAt:
-        type: string
       endereco:
         type: string
-      id:
-        type: integer
       nomeLoja:
         type: string
       numero:
         type: integer
       uf:
         type: string
-      updatedAt:
+    type: object
+  models.ConfigBase:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      endereco:
+        type: string
+      nomeLoja:
+        type: string
+      numero:
+        type: integer
+      uf:
         type: string
     type: object
   models.ItensVenda:
@@ -130,15 +144,13 @@ definitions:
       imagem:
         type: string
       preco:
+        minimum: 0
         type: number
       quantidade:
+        minimum: 0
         type: integer
       updatedAt:
         type: string
-      vendas:
-        items:
-          $ref: '#/definitions/models.ItensVenda'
-        type: array
     type: object
   models.ProdutoBase:
     properties:
@@ -147,8 +159,10 @@ definitions:
       descricao:
         type: string
       preco:
+        minimum: 0
         type: number
       quantidade:
+        minimum: 0
         type: integer
     type: object
   models.Venda:
@@ -204,17 +218,15 @@ info:
 paths:
   /admin/autenticar:
     post:
-      consumes:
-      - multipart/form-data
       description: Através dos dados fornecidos via formulário HTML, compara com o
         banco de dados para autenticar ou rejeitar
       parameters:
-      - in: formData
-        name: nome
-        type: string
-      - in: formData
-        name: senha
-        type: string
+      - description: Dados do usuário
+        in: body
+        name: usuario
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminBase'
       produces:
       - application/json
       responses:
@@ -445,27 +457,12 @@ paths:
       description: Altera as configurações da loja virtual conforme informações enviadas
         pelo formulário
       parameters:
-      - in: formData
-        name: bairro
-        type: string
-      - in: formData
-        name: cep
-        type: integer
-      - in: formData
-        name: cidade
-        type: string
-      - in: formData
-        name: endereco
-        type: string
-      - in: formData
-        name: nomeLoja
-        type: string
-      - in: formData
-        name: numero
-        type: integer
-      - in: formData
-        name: uf
-        type: string
+      - description: Dados da loja virtual
+        in: body
+        name: configuracoes
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfigBase'
       produces:
       - application/json
       responses:
@@ -484,6 +481,10 @@ paths:
             $ref: '#/definitions/responses.Error'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Altera as configurações da loja virtual
