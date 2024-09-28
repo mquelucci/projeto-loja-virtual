@@ -121,7 +121,7 @@ func EditarProduto(c *gin.Context) {
 		return
 	}
 
-	err := utils.ProdutoDuplo(produtoBase.Descricao, false, &produtoBase)
+	err := utils.ProdutoDuplo(produtoBase.Descricao, true, &produtoBase)
 	if err != nil {
 		c.JSON(http.StatusConflict, responses.Error{Erro: err.Error()})
 		return
