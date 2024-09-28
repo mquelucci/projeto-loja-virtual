@@ -15,6 +15,9 @@ func RunSeeders(db *gorm.DB) error {
 		if err := SeedAdmin(db); err != nil {
 			return err
 		}
+		if err := SeedConfig(db); err != nil {
+			return err
+		}
 		migration.FirstTime = true
 		migration.ID = 1
 		if err := db.Save(&migration).Error; err != nil {
