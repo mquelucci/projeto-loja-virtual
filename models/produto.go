@@ -7,8 +7,8 @@ import (
 
 type ProdutoBase struct {
 	Descricao  string  `json:"descricao" validate:"nonzero, nonnil" gorm:"notNull"`
-	Preco      float64 `json:"preco" validade:"nonnil" gorm:"notNull"`
-	Quantidade int     `json:"quantidade" validate:"nonnil" gorm:"notNull"`
+	Preco      float64 `json:"preco" validate:"min=0, nonnil" gorm:"notNull"`
+	Quantidade int     `json:"quantidade" validate:"min=0, nonnil" gorm:"notNull"`
 	Ativo      bool    `json:"ativo" validate:"nonnil" gorm:"notNull"`
 }
 
