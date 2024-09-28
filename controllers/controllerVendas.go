@@ -122,7 +122,7 @@ func BuscarVendaPorId(c *gin.Context) {
 	var vendaQuery VendasQuery
 	id := c.Param("id")
 
-	if err := database.DB.Debug().Preload("Itens").First(&venda, id).Error; err != nil {
+	if err := database.DB.Preload("Itens").First(&venda, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, responses.Error{Erro: "Venda não encontrada [" + err.Error() + "]"})
 		return
 	}
