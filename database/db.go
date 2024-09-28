@@ -2,6 +2,7 @@ package database
 
 import (
 	"os"
+	"strconv"
 
 	"github.com/mquelucci/projeto-loja-virtual/models"
 	"gorm.io/driver/mysql"
@@ -43,8 +44,17 @@ func ConectaBanco() {
 	}
 	sqlDB, _ := DB.DB()
 
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(15)
+	openConns, err := strconv.Atoi(os.Getenv("OPENCONNS"))
+	if err != nil {
+		panic("Erro ao tentar ler a variável de ambiente OPENCONNS - " + err.Error())
+	}
+	idleConns, err := strconv.Atoi(os.Getenv("IDLECONNS"))
+	if err != nil {
+		panic("Erro ao tentar ler a variável de ambiente IDLECONNS - " + err.Error())
+	}
+
+	sqlDB.SetMaxIdleConns(idleConns)
+	sqlDB.SetMaxOpenConns(openConns)
 	// Mantém a estrutura do banco de dados sempre atualizadas
 	DB.AutoMigrate(models.Migration{}, models.Produto{}, models.Cliente{}, models.Config{}, models.Admin{}, models.Venda{}, models.ItensVenda{})
 }
