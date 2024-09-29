@@ -11,14 +11,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type VendasQuery struct {
+type VendasSummary struct {
 	gorm.Model
-	ClienteID  uint
-	ValorTotal float64
-	ItensVenda []struct {
+	ClienteID      uint
+	CpfCnpjCliente string
+	NomeCliente    string
+	ValorTotal     float64
+	ItensVenda     []struct {
 		ProdutoID  uint
 		Quantidade int
 		Preco      float64
+		Descricao  string
 	}
 }
 
@@ -30,7 +33,7 @@ type VendasQuery struct {
 // @Accept		json
 // @Produce		json
 // @Param		venda	body	models.VendaRequest	true	"Dados da venda"
-// @Success		201	{object}	models.Venda
+// @Success		201	{object}	models.VendaRequest
 // @Failure		401	{object}	responses.Error
 // @Failure		404	{object}	responses.Error
 // @Failure		422	{object}	responses.Error
@@ -113,37 +116,41 @@ func CriarVenda(c *gin.Context) {
 // @Tags		vendas
 // @Produce		json
 // @Param		id	path	int	true	"ID da venda"
-// @Success		200	{object}	models.Venda
+// @Success		200	{object}	VendasSummary
 // @Failure		401	{object}	responses.Error
 // @Failure		404	{object}	responses.Error
 // @Router		/admin/vendas/buscar/{id} [get]
 func BuscarVendaPorId(c *gin.Context) {
 	var venda models.Venda
-	var vendaQuery VendasQuery
+	var vendaSummary VendasSummary
 	id := c.Param("id")
 
-	if err := database.DB.Preload("Itens").First(&venda, id).Error; err != nil {
+	if err := database.DB.Preload("Itens.Produto").Preload("Cliente").First(&venda, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, responses.Error{Erro: "Venda não encontrada [" + err.Error() + "]"})
 		return
 	}
 
-	vendaQuery.ID = venda.ID
-	vendaQuery.CreatedAt = venda.CreatedAt
-	vendaQuery.UpdatedAt = venda.UpdatedAt
-	vendaQuery.DeletedAt = venda.DeletedAt
-	vendaQuery.ClienteID = venda.ClienteID
-	vendaQuery.ValorTotal = venda.ValorTotal
+	vendaSummary.ID = venda.ID
+	vendaSummary.CreatedAt = venda.CreatedAt
+	vendaSummary.UpdatedAt = venda.UpdatedAt
+	vendaSummary.DeletedAt = venda.DeletedAt
+	vendaSummary.ClienteID = venda.ClienteID
+	vendaSummary.CpfCnpjCliente = venda.Cliente.CpfCnpj
+	vendaSummary.NomeCliente = venda.Cliente.Nome
+	vendaSummary.ValorTotal = venda.ValorTotal
 	for _, item := range venda.Itens {
-		vendaQuery.ItensVenda = append(vendaQuery.ItensVenda, struct {
+		vendaSummary.ItensVenda = append(vendaSummary.ItensVenda, struct {
 			ProdutoID  uint
 			Quantidade int
 			Preco      float64
+			Descricao  string
 		}{
 			item.ProdutoID,
 			item.Quantidade,
 			item.Preco,
+			item.Produto.Descricao,
 		})
 	}
 
-	c.JSON(http.StatusOK, responses.Message{Message: "Venda encontrada", Data: vendaQuery})
+	c.JSON(http.StatusOK, responses.Message{Message: "Venda encontrada", Data: vendaSummary})
 }
