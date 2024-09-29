@@ -5,7 +5,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/mquelucci/projeto-loja-virtual/database"
-	"github.com/mquelucci/projeto-loja-virtual/routes"
+	"github.com/mquelucci/projeto-loja-virtual/router"
 	"github.com/mquelucci/projeto-loja-virtual/seeders"
 )
 
@@ -16,5 +16,5 @@ func main() {
 	}
 	database.ConectaBanco()
 	seeders.RunSeeders(database.DB)
-	routes.HandleRequests()
+	router.HandleRequests()
 }

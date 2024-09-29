@@ -102,14 +102,14 @@ func CriarProduto(c *gin.Context) {
 // @Description Editar um produto através do id informado na url e dos dados recebidos via formulário do cliente
 // @Tags produtos
 // @Produce json
-// @Param id query int true "Id do produto"
+// @Param id path int true "Id do produto"
 // @Param produto body models.ProdutoBase true "Dados do produto"
 // @Success 202 {object} responses.Message{data=models.Produto}
 // @Failure 400 {object} responses.Error
 // @Failure 401 {object} responses.Error
 // @Failure 409 {object} responses.Error
 // @Failure 500 {object} responses.Error
-// @Router /admin/produtos/editar [put]
+// @Router /admin/produtos/editar/{id} [put]
 func EditarProduto(c *gin.Context) {
 	var produto models.Produto
 	var produtoBase models.ProdutoBase
