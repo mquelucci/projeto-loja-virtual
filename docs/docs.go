@@ -660,7 +660,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/admin/produtos/editar": {
+        "/admin/produtos/editar/{id}": {
             "put": {
                 "description": "Editar um produto através do id informado na url e dos dados recebidos via formulário do cliente",
                 "produces": [
@@ -675,7 +675,7 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "Id do produto",
                         "name": "id",
-                        "in": "query",
+                        "in": "path",
                         "required": true
                     },
                     {

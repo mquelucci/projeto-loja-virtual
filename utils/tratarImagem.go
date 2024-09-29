@@ -10,7 +10,7 @@ import (
 
 func TratarImagemProduto(c *gin.Context, imagem *multipart.FileHeader, produto *models.Produto) error {
 
-	savePath := "./client/assets/images/" + imagem.Filename
+	savePath := "./assets/images/" + imagem.Filename
 	if savePath == produto.Imagem {
 		os.Remove(savePath)
 	}

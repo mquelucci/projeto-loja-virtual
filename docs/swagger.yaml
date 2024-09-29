@@ -640,13 +640,13 @@ paths:
       summary: Deleta um produto
       tags:
       - produtos
-  /admin/produtos/editar:
+  /admin/produtos/editar/{id}:
     put:
       description: Editar um produto através do id informado na url e dos dados recebidos
         via formulário do cliente
       parameters:
       - description: Id do produto
-        in: query
+        in: path
         name: id
         required: true
         type: integer
