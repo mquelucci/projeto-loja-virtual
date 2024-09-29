@@ -1,8 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API para aplicações de lojas virtuais simples, com cadastro de clientes, produtos e registro de vendas",
+        "title": "GO API de Loja Virtual",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/",
     "paths": {
         "/admin/autenticar": {
             "post": {

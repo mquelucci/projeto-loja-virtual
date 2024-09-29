@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   controllers.VendasSummary:
     properties:
@@ -203,6 +204,10 @@ definitions:
     type: object
 info:
   contact: {}
+  description: API para aplicações de lojas virtuais simples, com cadastro de clientes,
+    produtos e registro de vendas
+  title: GO API de Loja Virtual
+  version: "1.0"
 paths:
   /admin/autenticar:
     post:
