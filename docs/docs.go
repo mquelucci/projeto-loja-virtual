@@ -919,7 +919,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Venda"
+                            "$ref": "#/definitions/controllers.VendasSummary"
                         }
                     },
                     "401": {
@@ -965,7 +965,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Venda"
+                            "$ref": "#/definitions/models.VendaRequest"
                         }
                     },
                     "401": {
@@ -997,6 +997,55 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.VendasSummary": {
+            "type": "object",
+            "properties": {
+                "clienteID": {
+                    "type": "integer"
+                },
+                "cpfCnpjCliente": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "itensVenda": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "descricao": {
+                                "type": "string"
+                            },
+                            "preco": {
+                                "type": "number"
+                            },
+                            "produtoID": {
+                                "type": "integer"
+                            },
+                            "quantidade": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "nomeCliente": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "valorTotal": {
+                    "type": "number"
+                }
+            }
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -1160,41 +1209,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ItensVenda": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "preco": {
-                    "type": "number"
-                },
-                "produto": {
-                    "$ref": "#/definitions/models.Produto"
-                },
-                "produtoID": {
-                    "type": "integer"
-                },
-                "quantidade": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "venda": {
-                    "$ref": "#/definitions/models.Venda"
-                },
-                "vendaID": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.Produto": {
             "type": "object",
             "properties": {
@@ -1245,38 +1259,6 @@ const docTemplate = `{
                 "quantidade": {
                     "type": "integer",
                     "minimum": 0
-                }
-            }
-        },
-        "models.Venda": {
-            "type": "object",
-            "properties": {
-                "cliente": {
-                    "$ref": "#/definitions/models.Cliente"
-                },
-                "clienteID": {
-                    "type": "integer"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "itens": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.ItensVenda"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "valorTotal": {
-                    "type": "number"
                 }
             }
         },
