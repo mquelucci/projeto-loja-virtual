@@ -1,3 +1,9 @@
+## DOCUMENTAÇÃO
+
+Ao iniciar o serviço da API, você pode ver a documentação na seguinte URL
+
+`http://{server_address}/swagger/index.html`
+
 ## ENVIROMENT FILE - CONFIG.ENV
 
 # BANCO DE DADOS
