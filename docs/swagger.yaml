@@ -1,0 +1,826 @@
+basePath: /
+definitions:
+  controllers.VendasSummary:
+    properties:
+      clienteID:
+        type: integer
+      cpfCnpjCliente:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      itensVenda:
+        items:
+          properties:
+            descricao:
+              type: string
+            preco:
+              type: number
+            produtoID:
+              type: integer
+            quantidade:
+              type: integer
+          type: object
+        type: array
+      nomeCliente:
+        type: string
+      updatedAt:
+        type: string
+      valorTotal:
+        type: number
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.AdminBase:
+    properties:
+      nome:
+        type: string
+      senha:
+        type: string
+    type: object
+  models.Cliente:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      cpf_cnpj:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      empresa:
+        type: string
+      endereco:
+        type: string
+      id:
+        type: integer
+      nome:
+        type: string
+      numero:
+        type: integer
+      telefone:
+        type: string
+      uf:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.ClienteBase:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      cpf_cnpj:
+        type: string
+      email:
+        type: string
+      empresa:
+        type: string
+      endereco:
+        type: string
+      nome:
+        type: string
+      numero:
+        type: integer
+      telefone:
+        type: string
+      uf:
+        type: string
+    type: object
+  models.Config:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      endereco:
+        type: string
+      nomeLoja:
+        type: string
+      numero:
+        type: integer
+      uf:
+        type: string
+    type: object
+  models.ConfigBase:
+    properties:
+      bairro:
+        type: string
+      cep:
+        type: integer
+      cidade:
+        type: string
+      endereco:
+        type: string
+      nomeLoja:
+        type: string
+      numero:
+        type: integer
+      uf:
+        type: string
+    type: object
+  models.Produto:
+    properties:
+      ativo:
+        type: boolean
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      descricao:
+        type: string
+      id:
+        type: integer
+      imagem:
+        type: string
+      preco:
+        minimum: 0
+        type: number
+      quantidade:
+        minimum: 0
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.ProdutoBase:
+    properties:
+      ativo:
+        type: boolean
+      descricao:
+        type: string
+      preco:
+        minimum: 0
+        type: number
+      quantidade:
+        minimum: 0
+        type: integer
+    type: object
+  models.VendaRequest:
+    properties:
+      cliente_id:
+        type: integer
+      itens:
+        items:
+          properties:
+            preco:
+              type: number
+            produto_id:
+              type: integer
+            quantidade:
+              type: integer
+          type: object
+        type: array
+    type: object
+  responses.Error:
+    properties:
+      erro:
+        type: string
+    type: object
+  responses.Message:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API para aplicações de lojas virtuais simples, com cadastro de clientes,
+    produtos e registro de vendas
+  title: GO API de Loja Virtual
+  version: "1.0"
+paths:
+  /admin/autenticar:
+    post:
+      description: Através dos dados fornecidos via formulário HTML, compara com o
+        banco de dados para autenticar ou rejeitar
+      parameters:
+      - description: Dados do usuário
+        in: body
+        name: usuario
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminBase'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Message'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Faz a autenticação do usuário
+      tags:
+      - auth
+  /admin/clientes/{cpf_cnpj}:
+    get:
+      description: Busca o cliente da loja virtual pelo seu CPF ou CNPJ e retorna
+        no JSON
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca o cliente da loja virtual pelo seu CPF ou CNPJ
+      tags:
+      - clientes
+  /admin/clientes/criar:
+    post:
+      description: Cria um cliente da loja virtual conforme informações enviadas pelo
+        formulário
+      parameters:
+      - description: Dados do cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClienteBase'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Cria um cliente da loja virtual
+      tags:
+      - clientes
+  /admin/clientes/deletar/{cpf_cnpj}:
+    delete:
+      description: Deleta um cliente da loja virtual conforme cpf/cnpj informadas
+        na URL
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Deletar um cliente da loja virtual (soft-delete)
+      tags:
+      - clientes
+  /admin/clientes/editar/{cpf_cnpj}:
+    put:
+      description: Edita um cliente da loja virtual conforme o JSON e cpf_cnpj informados
+      parameters:
+      - description: CPF_CNPJ
+        in: path
+        name: cpf_cnpj
+        required: true
+        type: integer
+      - description: Dados do cliente
+        in: body
+        name: cliente
+        required: true
+        schema:
+          $ref: '#/definitions/models.ClienteBase'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Cliente'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Edita um cliente da loja virtual
+      tags:
+      - clientes
+  /admin/clientes/todos:
+    get:
+      description: Busca todos os clientes da loja virtual e retorna no JSON
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cliente'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca todos os clientes da loja virtual
+      tags:
+      - clientes
+  /admin/configuracoes:
+    get:
+      description: Busca as configurações da loja virtual e retorna no JSON
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Config'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca as configurações da loja virtual
+      tags:
+      - admin
+    post:
+      description: Altera as configurações da loja virtual conforme informações enviadas
+        pelo formulário
+      parameters:
+      - description: Dados da loja virtual
+        in: body
+        name: configuracoes
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfigBase'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Config'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Altera as configurações da loja virtual
+      tags:
+      - admin
+  /admin/logout:
+    post:
+      description: Remove a autenticação da sessão do usuário atual
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Faz o logout do usuário
+      tags:
+      - auth
+  /admin/produtos/{id}:
+    get:
+      description: Busca e retorna um JSON no modelo de produtos com o produto que
+        possui o ID informado
+      parameters:
+      - description: ID do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Produto'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca um produto pelo seu ID
+      tags:
+      - produtos
+  /admin/produtos/adicionaImagem/{id}:
+    put:
+      description: Adiciona a imagem de um produto através do id informado na url
+        e da imagem enviada via formulário
+      parameters:
+      - description: Id do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Imagem do Produto
+        in: formData
+        name: imagem
+        type: file
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Adiciona a imagem de um produto
+      tags:
+      - produtos
+  /admin/produtos/criar:
+    post:
+      description: Cria um produto através dos dados recebidos via formulário do cliente
+      parameters:
+      - description: Criar produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProdutoBase'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Cria um produto
+      tags:
+      - produtos
+  /admin/produtos/deletar:
+    delete:
+      description: Deleta um produto específico através do Id fornecido via URL
+      parameters:
+      - description: Id do produto
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Deleta um produto
+      tags:
+      - produtos
+  /admin/produtos/editar/{id}:
+    put:
+      description: Editar um produto através do id informado na url e dos dados recebidos
+        via formulário do cliente
+      parameters:
+      - description: Id do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Dados do produto
+        in: body
+        name: produto
+        required: true
+        schema:
+          $ref: '#/definitions/models.ProdutoBase'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Editar um produto
+      tags:
+      - produtos
+  /admin/produtos/removeImagem/{id}:
+    delete:
+      description: Remove a imagem de um produto específico através do Id fornecido
+        via URL
+      parameters:
+      - description: Id do produto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Produto'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Remove a imagem de um produto
+      tags:
+      - produtos
+  /admin/produtos/todos:
+    get:
+      description: Busca e retorna um JSON no modelo de produtos com todos os produtos
+        não deletados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Produto'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca todos os produtos
+      tags:
+      - produtos
+  /admin/vendas/buscar/{id}:
+    get:
+      description: Busca uma venda por Id
+      parameters:
+      - description: ID da venda
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controllers.VendasSummary'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca uma venda por Id
+      tags:
+      - vendas
+  /admin/vendas/criar:
+    post:
+      consumes:
+      - application/json
+      description: Criar uma venda
+      parameters:
+      - description: Dados da venda
+        in: body
+        name: venda
+        required: true
+        schema:
+          $ref: '#/definitions/models.VendaRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.VendaRequest'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Criar uma venda
+      tags:
+      - vendas
+swagger: "2.0"
