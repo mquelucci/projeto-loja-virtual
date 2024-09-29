@@ -76,5 +76,5 @@ func HandleRequests() {
 
 	r.NoRoute(controllers.NotFound)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run()
+	r.Run(":80")
 }
