@@ -11,43 +11,6 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/utils"
 )
 
-// BuscarTodosClientes godoc
-// @Summary Busca todos os clientes da loja virtual
-// @Description Busca todos os clientes da loja virtual e retorna no JSON
-// @Tags clientes
-// @Produce json
-// @Success 200 {object} responses.Message{data=[]models.Cliente}
-// @Failure 401 {object} responses.Error
-// @Router /admin/clientes/todos [get]
-func BuscarTodosClientes(c *gin.Context) {
-	var clientes []models.Cliente
-	database.DB.Find(&clientes)
-	c.JSON(http.StatusOK, responses.Message{Message: "Clientes encontrados", Data: clientes})
-}
-
-// BuscarCliente godoc
-// @Summary Busca o cliente da loja virtual pelo seu CPF ou CNPJ
-// @Description Busca o cliente da loja virtual pelo seu CPF ou CNPJ e retorna no JSON
-// @Tags clientes
-// @Produce json
-// @Param cpf_cnpj path int true "CPF_CNPJ"
-// @Success 200 {object} responses.Message{data=models.Cliente}
-// @Failure 401 {object} responses.Error
-// @Failure 404 {object} responses.Error
-// @Failure 500 {object} responses.Error
-// @Router /admin/clientes/{cpf_cnpj} [get]
-func BuscarCliente(c *gin.Context) {
-	var cliente models.Cliente
-	cpfCnpj := c.Param("cpf_cnpj")
-
-	if err := database.DB.Where("cpf_cnpj = ?", cpfCnpj).First(&cliente).Error; err != nil {
-		c.JSON(http.StatusNotFound, responses.Error{Erro: "Não foi possível encontrar o cliente"})
-		return
-	}
-
-	c.JSON(http.StatusOK, responses.Message{Message: "Cliente encontrado", Data: cliente})
-}
-
 // CriarCliente godoc
 // @Summary Cria um cliente da loja virtual
 // @Description Cria um cliente da loja virtual conforme informações enviadas pelo formulário
