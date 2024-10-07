@@ -4,6 +4,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type TipoPag int
+
+const (
+	Credito TipoPag = iota + 1
+	Debito
+	Pix
+	Dinheiro
+)
+
+func (tp TipoPag) String() string {
+	return []string{"Credito", "Debito", "Pix", "Dinheiro"}[tp-1]
+}
+
 type VendaRequest struct {
 	ClienteID uint `json:"cliente_id"`
 	Itens     []struct {
@@ -11,6 +24,8 @@ type VendaRequest struct {
 		Quantidade int     `json:"quantidade"`
 		Preco      float64 `json:"preco"`
 	} `json:"itens"`
+	SitPag  bool `json:"sitpag"`
+	TipoPag TipoPag
 }
 
 type Venda struct {
