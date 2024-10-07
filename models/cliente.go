@@ -10,7 +10,7 @@ type ClienteBase struct {
 	Empresa  *string `json:"empresa"`
 	Telefone string  `json:"telefone" validade:"min=8, max=9, nonnil" gorm:"not null"`
 	Email    string  `json:"email" validade:"nonzero, nonnil" gorm:"not null"`
-	CpfCnpj  string  `json:"cpf_cnpj" validade:"nonzero, nonnil" gorm:"not null; index:idx_cpf_cnpj"`
+	CpfCnpj  string  `json:"cpf_cnpj" validade:"nonzero, nonnil, min=11, max=14" gorm:"not null; index:idx_cpf_cnpj"`
 	Endereco string  `json:"endereco" validate:"nonzero, nonnil" gorm:"not null"`
 	Numero   int     `json:"numero" validate:"nonnil" gorm:"not null"`
 	Bairro   string  `json:"bairro" validate:"nonzero, nonnil" gorm:"not null"`

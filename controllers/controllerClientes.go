@@ -41,6 +41,9 @@ func CriarCliente(c *gin.Context) {
 		return
 	}
 
+	// Deixa o CPF/CNPJ apenas com números
+	clienteBase.CpfCnpj = utils.CpfCnpjNumerico(clienteBase.CpfCnpj)
+
 	if err := models.ValidaCliente(&clienteBase); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do cliente: " + err.Error()})
 		return
@@ -74,6 +77,10 @@ func EditarCliente(c *gin.Context) {
 	var clienteBase models.ClienteBase
 
 	cpfCnpj := c.Param("cpf_cnpj")
+	if cpfCnpj == "" {
+		c.JSON(http.StatusBadRequest, responses.Error{Erro: "O CPF/CNPJ não foi informado"})
+	}
+	cpfCnpj = utils.CpfCnpjNumerico(cpfCnpj)
 
 	if err := c.ShouldBindJSON(&clienteBase); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Não foi possível converter o JSON para o modelo de ClienteBase [" + err.Error() + "]"})
@@ -89,6 +96,8 @@ func EditarCliente(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "O CEP não tem 8 dígitos"})
 		return
 	}
+
+	clienteBase.CpfCnpj = utils.CpfCnpjNumerico(clienteBase.CpfCnpj)
 
 	if err := models.ValidaCliente(&clienteBase); err != nil {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "Erro na validação do cliente: " + err.Error()})

@@ -260,6 +260,10 @@ paths:
                 data:
                   $ref: '#/definitions/models.Cliente'
               type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
         "401":
           description: Unauthorized
           schema:
@@ -268,11 +272,46 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/responses.Error'
-        "500":
-          description: Internal Server Error
+      summary: Busca o cliente da loja virtual pelo seu CPF ou CNPJ
+      tags:
+      - clientes
+  /admin/clientes/cep/{cep}:
+    get:
+      description: Busca os clientes da loja virtual que residem no CEP informado
+        e retorna no JSON
+      parameters:
+      - description: CEP
+        in: path
+        name: cep
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cliente'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
           schema:
             $ref: '#/definitions/responses.Error'
-      summary: Busca o cliente da loja virtual pelo seu CPF ou CNPJ
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca os clientes da loja virtual que residem no CEP informado
       tags:
       - clientes
   /admin/clientes/criar:
@@ -398,6 +437,84 @@ paths:
           schema:
             $ref: '#/definitions/responses.Error'
       summary: Edita um cliente da loja virtual
+      tags:
+      - clientes
+  /admin/clientes/empresa/{empresa}:
+    get:
+      description: Busca os clientes da loja virtual que tem a empresa informada no
+        cadastro e retorna no JSON
+      parameters:
+      - description: EMPRESA
+        in: path
+        name: empresa
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cliente'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca os clientes da loja virtual que tem a empresa informada no cadastro
+      tags:
+      - clientes
+  /admin/clientes/nome/{nome}:
+    get:
+      description: Busca os clientes da loja virtual que possuem o nome informado
+        no cadastro e retorna no JSON
+      parameters:
+      - description: NOME
+        in: path
+        name: nome
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/responses.Message'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Cliente'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.Error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.Error'
+      summary: Busca os clientes da loja virtual que possuem o nome informado
       tags:
       - clientes
   /admin/clientes/todos:

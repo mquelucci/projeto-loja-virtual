@@ -7,6 +7,7 @@ import (
 	"github.com/mquelucci/projeto-loja-virtual/controllers/responses"
 	"github.com/mquelucci/projeto-loja-virtual/database"
 	"github.com/mquelucci/projeto-loja-virtual/models"
+	"github.com/mquelucci/projeto-loja-virtual/utils"
 )
 
 // BuscarTodosClientes godoc
@@ -40,6 +41,7 @@ func BuscarClientePorCpfCnpj(c *gin.Context) {
 	if cpfCnpj == "" {
 		c.JSON(http.StatusBadRequest, responses.Error{Erro: "O CPF/CNPJ não foi informado"})
 	}
+	cpfCnpj = utils.CpfCnpjNumerico(cpfCnpj)
 	if err := database.DB.Where("cpf_cnpj = ?", cpfCnpj).First(&cliente).Error; err != nil {
 		c.JSON(http.StatusNotFound, responses.Error{Erro: "Não foi possível encontrar o cliente"})
 		return
